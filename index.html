@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Word Reef - Casual Word Puzzle</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka & Nunito for playful casual mobile game vibes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      overflow-x: hidden;
+      touch-action: pan-y;
+      background: #0284c7;
+    }
+
+    /* Ambient Ocean/Tropical Sun Gradient with animated subtle ripples */
+    .ocean-bg {
+      background: radial-gradient(circle at 50% 10%, #38bdf8 0%, #0284c7 40%, #0369a1 75%, #082f49 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Underwater Caustic Light Overlay */
+    .caustics-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: 
+        radial-gradient(ellipse 60% 30% at 30% 20%, rgba(255, 255, 255, 0.18), transparent 70%),
+        radial-gradient(ellipse 70% 40% at 75% 25%, rgba(255, 255, 255, 0.14), transparent 70%),
+        radial-gradient(ellipse 80% 50% at 50% 70%, rgba(56, 189, 248, 0.12), transparent 75%);
+      mix-blend-mode: overlay;
+      animation: causticWave 8s ease-in-out infinite alternate;
+      z-index: 1;
+    }
+
+    @keyframes causticWave {
+      0% { transform: scale(1) translateY(0); opacity: 0.7; }
+      50% { transform: scale(1.05) translateY(-12px); opacity: 0.95; }
+      100% { transform: scale(1) translateY(6px); opacity: 0.75; }
+    }
+
+    /* Animated CSS Bubbles */
+    .bubble {
+      position: absolute;
+      bottom: -60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2) 60%, rgba(56, 189, 248, 0.4) 100%);
+      box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0 8px rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+      animation: bubbleRise linear infinite;
+    }
+
+    @keyframes bubbleRise {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% {
+        transform: translateY(-110vh) translateX(45px);
+        opacity: 0;
+      }
+    }
+
+    /* Chunky 3D Tile Styles - Unselected Cream/Bone */
+    .tile-cream {
+      background: linear-gradient(180deg, #ffffff 0%, #fffbf2 40%, #ffedd5 100%);
+      box-shadow: 0 6px 0 #d97706, 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      color: #1e293b;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+    }
+
+    .tile-cream:active, .tile-cream.is-pressed {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #d97706, 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Chunky 3D Tile Styles - Vibrant Magenta/Purple Selected */
+    .tile-purple {
+      background: linear-gradient(180deg, #d946ef 0%, #c026d3 50%, #9333ea 100%);
+      box-shadow: 0 6px 0 #581c87, 0 10px 18px rgba(192, 38, 211, 0.45);
+      color: #ffffff;
+      border: 2px solid #f0abfc;
+      transform: translateY(-2px) scale(1.04);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    /* Empty Target Slot in Word Stack */
+    .slot-empty {
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: inset 0 -3px 0 rgba(148, 163, 184, 0.45), 0 3px 6px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+    }
+
+    /* Solved Target Slot */
+    .slot-solved {
+      background: linear-gradient(180deg, #c026d3 0%, #a21caf 60%, #7e22ce 100%);
+      box-shadow: 0 4px 0 #581c87, 0 6px 14px rgba(147, 51, 234, 0.35);
+      color: white;
+      border: 2px solid #f5d0fe;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Floating Bubble Word Pill */
+    .current-word-pill {
+      background: linear-gradient(135deg, #ec4899 0%, #c026d3 50%, #8b5cf6 100%);
+      box-shadow: 0 6px 0 #701a75, 0 10px 20px rgba(192, 38, 211, 0.35);
+      border: 2.5px solid #fdf4ff;
+    }
+
+    /* Action Buttons (Shuffle, Clear, Hint) */
+    .btn-action {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      box-shadow: 0 4px 0 #0369a1, 0 6px 10px rgba(0, 0, 0, 0.2);
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.1s ease;
+    }
+    .btn-action:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #0369a1, 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* New Level / Green Button */
+    .btn-primary-green {
+      background: linear-gradient(180deg, #4ade80 0%, #22c55e 60%, #16a34a 100%);
+      box-shadow: 0 5px 0 #15803d, 0 8px 16px rgba(22, 163, 74, 0.3);
+      border: 2px solid #bbf7d0;
+    }
+    .btn-primary-green:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #15803d;
+    }
+
+    /* Subtle underwater light beam effect */
+    .sun-shafts {
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Keyframes */
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      80% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .animate-shake {
+      animation: shake 0.32s ease-in-out;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translate(-50%, 0) scale(0.8); opacity: 1; }
+      100% { transform: translate(-50%, -60px) scale(1.2); opacity: 0; }
+    }
+
+    .float-score {
+      animation: floatUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      pointer-events: none;
+      position: absolute;
+    }
+
+    /* Custom Scrollbar for ladder */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="ocean-bg min-h-screen text-slate-800 flex justify-center items-center p-2 sm:p-4 select-none">
+  <!-- Caustics & Bubbles Ambient FX -->
+  <div class="caustics-layer"></div>
+  <div id="bubble-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
+  <!-- Audio Context Activator Banner (hidden once started) -->
+  <div id="audio-hint" class="fixed top-2 text-xs font-bold text-white/70 bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full z-50 pointer-events-none transition-opacity duration-500">
+    Tap anywhere for sound effects 🔊
+  </div>
+
+  <!-- Game Shell: Phone Container -->
+  <div class="relative w-full max-w-md h-[95vh] max-h-[860px] bg-sky-950/40 backdrop-blur-md rounded-[38px] border-4 border-sky-400/40 shadow-2xl flex flex-col justify-between overflow-hidden p-3.5 sm:p-5 z-10">
+    <!-- Ambient Sunlight Overlay -->
+    <div class="sun-shafts absolute inset-0 z-0"></div>
+
+    <!-- HEADER / STATS BAR -->
+    <header class="relative z-10 flex items-center justify-between pb-2 border-b border-sky-400/20">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center font-black text-amber-950 text-xl shadow-md border-2 border-yellow-200">
+          <span id="level-indicator">1</span>
+        </div>
+        <div>
+          <h1 class="text-white text-xl font-black tracking-wide leading-tight drop-shadow-sm flex items-center gap-1.5">
+            Quaraword
+            <span class="text-xs bg-pink-500 text-white font-extrabold px-1.5 py-0.5 rounded-full shadow">PRO</span>
+          </h1>
+          <p id="theme-subtitle" class="text-sky-200 text-xs font-semibold">Ocean Breeze</p>
+        </div>
+      </div>
+
+      <!-- Score & Stars -->
+      <div class="flex items-center gap-2">
+        <div class="bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-sky-300/30 flex items-center gap-1.5 shadow-inner">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-300 fill-amber-300"></i>
+          <span id="score-display" class="font-black text-amber-300 text-base">0</span>
+          <span class="text-[10px] text-sky-200 uppercase font-extrabold">pts</span>
+        </div>
+
+        <!-- Audio Toggle -->
+        <button id="btn-toggle-sound" class="w-9 h-9 rounded-full bg-sky-800/80 hover:bg-sky-700 active:scale-90 border border-sky-400/40 text-white flex items-center justify-center transition shadow">
+          <i id="icon-sound" data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- MIDDLE: TARGET WORDS STACK (Scrollable Ladder) -->
+    <main class="relative z-10 flex-1 flex flex-col justify-center my-3 overflow-hidden">
+      <div class="flex items-center justify-between px-1 mb-1.5 text-xs font-bold text-sky-200">
+        <span>WORDS TO FIND: <strong id="progress-text" class="text-white font-black text-sm">0/4</strong></span>
+        <div class="flex items-center gap-1.5">
+          <span id="bonus-counter" class="bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-md border border-amber-400/40 text-[11px] font-bold">
+            Bonus: 0
+          </span>
+          <span id="bonus-badge" class="bg-pink-500 text-white px-2 py-0.5 rounded-md border border-pink-300 text-[11px] font-extrabold hidden animate-bounce">
+            Bonus Word! +25
+          </span>
+        </div>
+      </div>
+
+      <!-- The dynamic stack of target words -->
+      <div id="target-ladder" class="flex flex-col gap-2.5 overflow-y-auto no-scrollbar py-2 max-h-[300px] sm:max-h-[340px] px-1">
+        <!-- Generated Dynamically via JS -->
+      </div>
+    </main>
+
+    <!-- FLOATING POPUP WORD DISPLAY BUBBLE -->
+    <div class="relative z-10 mb-2.5 flex justify-center items-center">
+      <div id="current-word-container" class="relative">
+        <div id="current-word-pill" class="current-word-pill px-6 py-2 rounded-full min-w-[190px] h-12 flex items-center justify-center shadow-lg transition-transform">
+          <span id="current-spelling" class="text-white font-black text-2xl tracking-widest drop-shadow">
+            &nbsp;
+          </span>
+        </div>
+        <!-- Particle & Point Emitter Hook -->
+        <div id="emitter-point" class="absolute top-0 left-1/2 -translate-x-1/2"></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM CONTROLS & LETTER BANK -->
+    <div class="relative z-10 bg-slate-900/60 backdrop-blur-md rounded-3xl p-3 border border-sky-400/30 shadow-2xl">
+      <!-- SVG Connecting Ribbon Layer -->
+      <svg id="trail-svg" class="absolute inset-0 w-full h-full pointer-events-none z-20">
+        <path id="trail-path" d="" fill="none" stroke="rgba(244, 114, 182, 0.85)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 8px rgba(217, 70, 239, 0.9))"></path>
+      </svg>
+
+      <!-- Utility Bar: Shuffle, Clear, Hint, Submit -->
+      <div class="flex justify-between items-center mb-3 px-1">
+        <div class="flex gap-2">
+          <!-- Shuffle Button -->
+          <button id="btn-shuffle" class="btn-action px-3.5 py-1.5 rounded-xl text-white font-bold text-xs flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+            <span>Shuffle</span>
+          </button>
+
+          <!-- Clear Button -->
+          <button id="btn-clear" class="btn-action px-3 py-1.5 rounded-xl text-white font-bold text-xs flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Clear</span>
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <!-- Hint Button -->
+          <button id="btn-hint" class="bg-gradient-to-b from-amber-400 to-amber-600 shadow-md border border-amber-300 text-amber-950 font-black text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="lightbulb" class="w-3.5 h-3.5 fill-amber-950"></i>
+            <span>Hint</span>
+          </button>
+
+          <!-- Submit Button -->
+          <button id="btn-submit" class="btn-primary-green px-4 py-1.5 rounded-xl text-white font-black text-xs flex items-center gap-1 active:scale-95">
+            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+            <span>SEND</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2-ROW CHUNKY LETTER TILES BANK -->
+      <div id="letter-bank" class="grid grid-cols-5 gap-2 sm:gap-2.5 touch-none select-none relative z-10">
+        <!-- Filled with 10 letter tiles via JS -->
+      </div>
+    </div>
+
+    <!-- LEVEL VICTORY MODAL (MODAL OVERLAY) -->
+    <div id="victory-modal" class="hidden absolute inset-0 z-50 bg-sky-950/80 backdrop-blur-md flex items-center justify-center p-6">
+      <div class="bg-gradient-to-b from-sky-800 to-slate-900 border-2 border-sky-400 p-6 rounded-3xl w-full text-center shadow-2xl relative">
+        <div class="w-20 h-20 mx-auto -mt-16 bg-gradient-to-tr from-amber-400 to-yellow-200 rounded-3xl border-4 border-white shadow-xl flex items-center justify-center">
+          <i data-lucide="trophy" class="w-10 h-10 text-amber-900 fill-amber-900"></i>
+        </div>
+        <h2 class="text-white text-3xl font-black mt-3 mb-1">Magnificent!</h2>
+        <p class="text-sky-200 text-sm mb-4">Level complete! All reef words uncovered.</p>
+
+        <div class="bg-sky-900/60 p-4 rounded-2xl mb-5 border border-sky-400/20 flex justify-around">
+          <div>
+            <div class="text-xs text-sky-300 font-bold uppercase">Words</div>
+            <div id="modal-words-count" class="text-2xl font-black text-white">4/4</div>
+          </div>
+          <div class="w-px bg-sky-400/20"></div>
+          <div>
+            <div class="text-xs text-sky-300 font-bold uppercase">Total Score</div>
+            <div id="modal-score" class="text-2xl font-black text-amber-300">0</div>
+          </div>
+        </div>
+
+        <button id="btn-next-level" class="btn-primary-green w-full py-3.5 rounded-2xl font-black text-white text-lg tracking-wide uppercase shadow-lg active:scale-98">
+          Next Puzzle →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIC: Sound Engine, Game State, Drag/Tap Detection, Animations -->
+  <script>
+    /* ========================================================================
+       1. SYNTHESIZED SOUND ENGINE (Web Audio API - No external assets)
+       ======================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playPop(index = 0) {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Higher pitch as player chains letters
+        const baseFreq = 420;
+        const freq = baseFreq + (index * 60);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.08);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+
+      playSuccess() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        // Ascending major chord fanfare
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const start = now + (idx * 0.07);
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+
+          gain.gain.setValueAtTime(0.2, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(start);
+          osc.stop(start + 0.4);
+        });
+      }
+
+      playThud() {
+        if (!this.enabled || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(60, now + 0.18);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.2);
+      }
+
+      playVictory() {
+        if (!this.enabled || !this.ctx) return;
+        const melody = [
+          { f: 523.25, d: 0.12 }, // C
+          { f: 659.25, d: 0.12 }, // E
+          { f: 783.99, d: 0.12 }, // G
+          { f: 1046.50, d: 0.28 }, // C
+          { f: 880.00, d: 0.14 }, // A
+          { f: 1046.50, d: 0.4 }  // C
+        ];
+        let offset = 0;
+        const now = this.ctx.currentTime;
+        melody.forEach(item => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(item.f, now + offset);
+
+          gain.gain.setValueAtTime(0.25, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + item.d);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + offset);
+          osc.stop(now + offset + item.d + 0.05);
+          offset += item.d;
+        });
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ========================================================================
+       2. PUZZLE DATA & LEVEL DEFINITIONS
+       ======================================================================== */
+    const LEVELS = [
+      {
+        theme: "Ocean Tide",
+        letters: ["S", "B", "R", "A", "I", "M", "A", "R", "T", "N"],
+        targets: ["ART", "BAR", "RAIN", "BRAIN", "SMART"]
+      },
+      {
+        theme: "Coral Reef",
+        letters: ["C", "O", "R", "A", "L", "S", "H", "I", "N", "E"],
+        targets: ["COAL", "HERO", "SHINE", "CORAL", "SHORE"]
+      },
+      {
+        theme: "Sunken Treasure",
+        letters: ["P", "E", "A", "R", "L", "S", "T", "O", "N", "E"],
+        targets: ["PEAR", "ROSE", "STONE", "PEARL", "PLANET"]
+      }
+    ];
+
+    /* Comprehensive General English Dictionary for Bonus Words */
+    const VALID_DICTIONARY = new Set([
+      // Level 1 combinations (S, B, R, A, I, M, A, R, T, N):
+      "RAT", "RATS", "TAR", "TARS", "ART", "ARTS", "BAT", "BATS", "BAR", "BARS",
+      "MAT", "MATS", "SAT", "SIT", "BIT", "BITS", "FIT", "AIR", "AIRS", "AIM", "AIMS",
+      "ARM", "ARMS", "RAM", "RAMS", "MAR", "MARS", "MAN", "MEN", "MAIN", "MAINS",
+      "RIM", "RIMS", "RIB", "RIBS", "TAB", "TABS", "TAN", "TANS", "TIN", "TINS",
+      "NIT", "NITS", "SIN", "SAB", "BAIT", "BAITS", "STIR", "STAR", "STAIN", "TRAIN",
+      "TRAINS", "TRAM", "TRAMS", "MART", "MARTS", "SMART", "BRAIN", "BRAINS", "RAIN",
+      "RAINS", "BARN", "BARNS", "BART", "MINT", "MINTS", "MAST", "MIST", "STRAM",
+      "BANT", "BAST", "BRAN", "BRAT", "BRATS", "ANTI", "INTI", "IRAN", "MARI", "SARI",
+      "SAIN", "SIMA", "AMIR", "AMIT", "ATMA", "RAMI", "RANI", "RITA",
+
+      // Level 2 combinations (C, O, R, A, L, S, H, I, N, E):
+      "CORAL", "COAL", "COALS", "SHINE", "SHORE", "HERO", "HEROS", "COIN", "COINS",
+      "CHIN", "CHINS", "LION", "LIONS", "LINE", "LINES", "LONE", "LORE", "HORN", "HORNS",
+      "HOSE", "NOSE", "ROSE", "IRON", "IRONS", "HAIR", "HAIRS", "CHAIR", "CHAIRS", "CLAN",
+      "CLANS", "CONE", "CONES", "CANE", "CANES", "CARE", "CARES", "CASE", "CASH", "CLASH",
+      "CRASH", "EAR", "EARS", "ERA", "ERAS", "ONE", "ONES", "SON", "SUN", "SHOE", "SORE",
+      "SOAR", "SOLAR", "SHARE", "SHALE", "SHINE", "SHORN", "RACE", "RACES", "RICE", "RICH",
+
+      // Level 3 combinations (P, E, A, R, L, S, T, O, N, E):
+      "PEAR", "PEARS", "PEARL", "PEARLS", "ROSE", "STONE", "STONES", "PLANET", "PLANETS",
+      "LEAN", "LEANS", "POLE", "POLES", "REST", "RESTS", "NEST", "NESTS", "STAR", "STARS",
+      "NOTE", "NOTES", "TONE", "TONES", "LANE", "LANES", "LATE", "TALE", "TALES", "TEAL",
+      "TAPE", "TAPES", "PART", "PARTS", "TRAP", "TRAPS", "POST", "POSTS", "SPOT", "SPOTS",
+      "STOP", "STOPS", "PALE", "PALES", "PLEA", "PLEAS", "PLOT", "PLOTS", "LEAP", "LEAPS",
+      "SLOPE", "STARE", "STERN", "SPORE", "SPENT", "PLANT", "PLANTS", "PLATE", "PLATES",
+      "PET", "PETS", "NET", "NETS", "POT", "POTS", "TOP", "TOPS", "LOT", "LOTS", "ROT", "ROTS",
+      "TOE", "TOES", "ORE", "ORES", "ALE", "ALES", "APE", "APES", "PAN", "PANS", "PEN", "PENS"
+    ]);
+
+    /* ========================================================================
+       3. GAME STATE MANAGEMENT
+       ======================================================================== */
+    let currentLevelIndex = 0;
+    let score = 0;
+    let solvedWords = new Set();
+    let discoveredBonusWords = new Set();
+    let currentSelection = []; // Array of indices from the current bank
+    let bankLetters = [];      // Array of 10 characters for the active puzzle
+    let isDragging = false;
+
+    // DOM Elements
+    const targetLadderEl = document.getElementById('target-ladder');
+    const letterBankEl = document.getElementById('letter-bank');
+    const currentSpellingEl = document.getElementById('current-spelling');
+    const currentWordPill = document.getElementById('current-word-pill');
+    const scoreDisplay = document.getElementById('score-display');
+    const progressText = document.getElementById('progress-text');
+    const bonusCounter = document.getElementById('bonus-counter');
+    const levelIndicator = document.getElementById('level-indicator');
+    const themeSubtitle = document.getElementById('theme-subtitle');
+    const victoryModal = document.getElementById('victory-modal');
+    const audioHint = document.getElementById('audio-hint');
+    const btnToggleSound = document.getElementById('btn-toggle-sound');
+    const iconSound = document.getElementById('icon-sound');
+    const trailPath = document.getElementById('trail-path');
+    const trailSvg = document.getElementById('trail-svg');
+
+    /* Bubble Particle Generator */
+    function initBubbles() {
+      const container = document.getElementById('bubble-container');
+      const bubbleCount = 18;
+      for (let i = 0; i < bubbleCount; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        const size = Math.random() * 26 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.animationDuration = `${Math.random() * 6 + 6}s`;
+        bubble.style.animationDelay = `${Math.random() * 8}s`;
+        container.appendChild(bubble);
+      }
+    }
+
+    /* ========================================================================
+       4. INITIALIZATION & LEVEL SETUP
+       ======================================================================== */
+    function initLevel(levelIdx) {
+      currentLevelIndex = levelIdx % LEVELS.length;
+      const level = LEVELS[currentLevelIndex];
+      
+      levelIndicator.innerText = currentLevelIndex + 1;
+      themeSubtitle.innerText = level.theme;
+      solvedWords.clear();
+      discoveredBonusWords.clear();
+      if (bonusCounter) bonusCounter.innerText = "Bonus: 0";
+      currentSelection = [];
+      updateCurrentWordDisplay();
+      updateTrailPath();
+
+      // Shuffle initial letters for diversity
+      bankLetters = [...level.letters];
+
+      renderTargetLadder();
+      renderLetterBank();
+      updateProgress();
+
+      victoryModal.classList.add('hidden');
+    }
+
+    function renderTargetLadder() {
+      const level = LEVELS[currentLevelIndex];
+      targetLadderEl.innerHTML = '';
+
+      level.targets.forEach(word => {
+        const row = document.createElement('div');
+        row.className = "flex justify-center items-center gap-1.5 py-0.5";
+        row.setAttribute('data-word', word);
+
+        const isSolved = solvedWords.has(word);
+
+        for (let i = 0; i < word.length; i++) {
+          const char = word[i];
+          const slot = document.createElement('div');
+          
+          if (isSolved) {
+            slot.className = "slot-solved w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-lg sm:text-xl";
+            slot.innerText = char;
+          } else {
+            slot.className = "slot-empty w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-sky-200/40 flex items-center justify-center text-slate-300 font-bold text-sm";
+            slot.innerHTML = `<span class="opacity-0">${char}</span>`;
+          }
+          row.appendChild(slot);
+        }
+        targetLadderEl.appendChild(row);
+      });
+    }
+
+    function renderLetterBank() {
+      letterBankEl.innerHTML = '';
+      bankLetters.forEach((char, index) => {
+        const tile = document.createElement('div');
+        tile.className = "tile-cream aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer font-black text-2xl sm:text-3xl relative overflow-hidden";
+        tile.setAttribute('data-index', index);
+        tile.setAttribute('data-char', char);
+
+        // Specular 3D Gloss Highlight Pill
+        const gloss = document.createElement('div');
+        gloss.className = "absolute top-1 left-2 right-2 h-2.5 bg-white/40 rounded-full pointer-events-none";
+        tile.appendChild(gloss);
+
+        // Letter label
+        const letterSpan = document.createElement('span');
+        letterSpan.innerText = char;
+        tile.appendChild(letterSpan);
+
+        // Small casual score pip in the corner
+        const pointPip = document.createElement('span');
+        pointPip.className = "absolute bottom-1 right-1.5 text-[9px] font-extrabold text-amber-600/70";
+        pointPip.innerText = getTilePoints(char);
+        tile.appendChild(pointPip);
+
+        letterBankEl.appendChild(tile);
+      });
+    }
+
+    function getTilePoints(char) {
+      const high = "JQXZ";
+      const mid = "BCDFMPVW";
+      if (high.includes(char)) return "+10";
+      if (mid.includes(char)) return "+5";
+      return "+1";
+    }
+
+    /* ========================================================================
+       5. DRAG & TAP INTERACTION SYSTEM
+       ======================================================================== */
+    function toggleTileSelection(index) {
+      sound.init();
+      const existingPos = currentSelection.indexOf(index);
+      
+      if (existingPos !== -1) {
+        // If clicking the last selected tile again, undo it
+        if (existingPos === currentSelection.length - 1) {
+          currentSelection.pop();
+          sound.playPop(Math.max(0, currentSelection.length));
+        } else {
+          // If tapping already selected earlier tile, trim back to that position
+          currentSelection = currentSelection.slice(0, existingPos + 1);
+          sound.playPop(currentSelection.length);
+        }
+      } else {
+        // Add tile to chain
+        currentSelection.push(index);
+        sound.playPop(currentSelection.length);
+      }
+      refreshTileStyles();
+      updateCurrentWordDisplay();
+      updateTrailPath();
+    }
+
+    function updateTrailPath() {
+      if (!trailPath || !trailSvg) return;
+      if (currentSelection.length < 2) {
+        trailPath.setAttribute('d', '');
+        return;
+      }
+
+      const svgRect = trailSvg.getBoundingClientRect();
+      const points = currentSelection.map(idx => {
+        const tile = letterBankEl.querySelector(`[data-index="${idx}"]`);
+        if (!tile) return null;
+        const rect = tile.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2 - svgRect.left,
+          y: rect.top + rect.height / 2 - svgRect.top
+        };
+      }).filter(Boolean);
+
+      if (points.length < 2) {
+        trailPath.setAttribute('d', '');
+        return;
+      }
+
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let i = 1; i < points.length; i++) {
+        d += ` L ${points[i].x} ${points[i].y}`;
+      }
+      trailPath.setAttribute('d', d);
+    }
+
+    function refreshTileStyles() {
+      const tiles = letterBankEl.querySelectorAll('.tile-cream, .tile-purple');
+      tiles.forEach((tile) => {
+        const idx = parseInt(tile.getAttribute('data-index'));
+        if (currentSelection.includes(idx)) {
+          tile.classList.remove('tile-cream');
+          tile.classList.add('tile-purple');
+        } else {
+          tile.classList.remove('tile-purple');
+          tile.classList.add('tile-cream');
+        }
+      });
+    }
+
+    function updateCurrentWordDisplay() {
+      const spelled = currentSelection.map(idx => bankLetters[idx]).join('');
+      if (spelled.length > 0) {
+        currentSpellingEl.innerText = spelled;
+        currentWordPill.classList.remove('opacity-40');
+      } else {
+        currentSpellingEl.innerHTML = '&nbsp;';
+        currentWordPill.classList.add('opacity-40');
+      }
+    }
+
+    /* Pointer / Touch Drag Support */
+    function handlePointerDown(e) {
+      sound.init();
+      isDragging = true;
+      const target = getTileFromPoint(e.clientX, e.clientY);
+      if (target) {
+        const index = parseInt(target.getAttribute('data-index'));
+        currentSelection = [index];
+        sound.playPop(1);
+        refreshTileStyles();
+        updateCurrentWordDisplay();
+        updateTrailPath();
+      }
+    }
+
+    function handlePointerMove(e) {
+      if (!isDragging) return;
+      const target = getTileFromPoint(e.clientX, e.clientY);
+      if (target) {
+        const index = parseInt(target.getAttribute('data-index'));
+        if (!currentSelection.includes(index)) {
+          currentSelection.push(index);
+          sound.playPop(currentSelection.length);
+          refreshTileStyles();
+          updateCurrentWordDisplay();
+          updateTrailPath();
+        }
+      }
+    }
+
+    function handlePointerUp() {
+      if (isDragging) {
+        isDragging = false;
+        // Automatically check if spelled word matches when release
+        if (currentSelection.length >= 3) {
+          checkWord();
+        }
+      }
+    }
+
+    function getTileFromPoint(x, y) {
+      const el = document.elementFromPoint(x, y);
+      return el ? el.closest('#letter-bank > div') : null;
+    }
+
+    /* Bind Touch & Mouse to Letter Bank */
+    letterBankEl.addEventListener('pointerdown', (e) => {
+      // Direct click mode or drag mode
+      handlePointerDown(e);
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      handlePointerMove(e);
+    });
+
+    window.addEventListener('pointerup', () => {
+      handlePointerUp();
+    });
+
+    // Also support single clicks if not dragging
+    letterBankEl.addEventListener('click', (e) => {
+      const tile = e.target.closest('#letter-bank > div');
+      if (tile) {
+        const index = parseInt(tile.getAttribute('data-index'));
+        // If selection is empty, select it
+        if (!isDragging) {
+          toggleTileSelection(index);
+        }
+      }
+    });
+
+    /* ========================================================================
+       6. WORD VALIDATION, PARTICLES & ANIMATIONS
+       ======================================================================== */
+    function checkWord() {
+      const word = currentSelection.map(idx => bankLetters[idx]).join('').toUpperCase();
+      if (!word) return;
+
+      const level = LEVELS[currentLevelIndex];
+
+      // 1. Is it a Target Stack Word?
+      if (level.targets.includes(word)) {
+        if (!solvedWords.has(word)) {
+          solvedWords.add(word);
+          sound.playSuccess();
+          triggerCelebration(word, 50 * word.length);
+          revealTargetWord(word);
+          updateScore(50 * word.length);
+          updateProgress();
+          clearSelection();
+
+          if (solvedWords.size === level.targets.length) {
+            setTimeout(handleLevelComplete, 600);
+          }
+        } else {
+          // Already solved target word
+          triggerShake();
+          sound.playThud();
+          clearSelection();
+        }
+        return;
+      }
+
+      // 2. Is it a Valid Bonus Word (e.g. RAT, TRAM, MAT, SAT, etc.)?
+      const isBonus = VALID_DICTIONARY.has(word) || (level.bonusWords && level.bonusWords.includes(word));
+      if (isBonus) {
+        if (!discoveredBonusWords.has(word)) {
+          discoveredBonusWords.add(word);
+          sound.playSuccess();
+          const bonusPts = 25 + (word.length >= 4 ? (word.length - 3) * 10 : 0);
+          triggerCelebration(word, bonusPts);
+          triggerBonusNotice(word, bonusPts);
+          updateScore(bonusPts);
+          if (bonusCounter) {
+            bonusCounter.innerText = `Bonus: ${discoveredBonusWords.size}`;
+          }
+          clearSelection();
+        } else {
+          // Already discovered this bonus word in this round
+          triggerShake();
+          sound.playThud();
+          clearSelection();
+        }
+        return;
+      }
+
+      // 3. Invalid Word
+      triggerShake();
+      sound.playThud();
+      clearSelection();
+    }
+
+    function revealTargetWord(word) {
+      const row = targetLadderEl.querySelector(`[data-word="${word}"]`);
+      if (row) {
+        row.innerHTML = '';
+        for (let i = 0; i < word.length; i++) {
+          const char = word[i];
+          const slot = document.createElement('div');
+          slot.className = "slot-solved w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-lg sm:text-xl";
+          slot.style.animationDelay = `${i * 60}ms`;
+          slot.innerText = char;
+          row.appendChild(slot);
+        }
+      }
+    }
+
+    function triggerShake() {
+      currentWordPill.classList.add('animate-shake');
+      setTimeout(() => {
+        currentWordPill.classList.remove('animate-shake');
+      }, 350);
+    }
+
+    function triggerCelebration(word, points) {
+      // Floating score badge
+      const emitter = document.getElementById('emitter-point');
+      const badge = document.createElement('div');
+      badge.className = "float-score font-black text-2xl text-yellow-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]";
+      badge.innerText = `+${points}!`;
+      emitter.appendChild(badge);
+      setTimeout(() => badge.remove(), 800);
+
+      // Mini confetti-like particle explosion
+      createBurst(emitter);
+    }
+    function triggerBonusNotice(word, points = 25) {
+      const badge = document.getElementById('bonus-badge');
+      if (!badge) return;
+      badge.innerText = `+${points}pts "${word}"!`;
+      badge.classList.remove('hidden');
+      setTimeout(() => {
+        badge.classList.add('hidden');
+      }, 1600);
+    }
+
+    function createBurst(parent) {
+      const colors = ['#f472b6', '#c084fc', '#38bdf8', '#facc15', '#4ade80'];
+      for (let i = 0; i < 14; i++) {
+        const p = document.createElement('div');
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.floor(Math.random() * 8) + 6;
+        
+        p.style.position = 'absolute';
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        p.style.backgroundColor = color;
+        p.style.borderRadius = '50%';
+        p.style.pointerEvents = 'none';
+
+        const angle = (Math.PI * 2 * i) / 14;
+        const velocity = Math.random() * 60 + 40;
+        const dx = Math.cos(angle) * velocity;
+        const dy = Math.sin(angle) * velocity - 20;
+
+        parent.appendChild(p);
+
+        p.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 650,
+          easing: 'cubic-bezier(0, .9, .57, 1)'
+        }).onfinish = () => p.remove();
+      }
+    }
+
+    function clearSelection() {
+      currentSelection = [];
+      refreshTileStyles();
+      updateCurrentWordDisplay();
+      updateTrailPath();
+    }
+
+    function updateScore(pts) {
+      score += pts;
+      scoreDisplay.innerText = score;
+    }
+
+    function updateProgress() {
+      const level = LEVELS[currentLevelIndex];
+      progressText.innerText = `${solvedWords.size}/${level.targets.length}`;
+    }
+
+    function handleLevelComplete() {
+      sound.playVictory();
+      document.getElementById('modal-words-count').innerText = `${solvedWords.size}/${LEVELS[currentLevelIndex].targets.length}`;
+      document.getElementById('modal-score').innerText = score;
+      victoryModal.classList.remove('hidden');
+    }
+
+    /* ========================================================================
+       7. BUTTON CONTROLS (Shuffle, Hint, Clear, Audio)
+       ======================================================================== */
+    // Shuffle Letter Bank
+    document.getElementById('btn-shuffle').addEventListener('click', () => {
+      sound.init();
+      sound.playPop(1);
+      // Modern Fisher-Yates shuffle
+      for (let i = bankLetters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [bankLetters[i], bankLetters[j]] = [bankLetters[j], bankLetters[i]];
+      }
+      clearSelection();
+      renderLetterBank();
+    });
+
+    // Clear Selection
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      sound.init();
+      sound.playThud();
+      clearSelection();
+    });
+
+    // Send / Submit Word
+    document.getElementById('btn-submit').addEventListener('click', () => {
+      sound.init();
+      checkWord();
+    });
+
+    // Hint: Solves a random unrevealed target word or gives a hint
+    document.getElementById('btn-hint').addEventListener('click', () => {
+      sound.init();
+      const level = LEVELS[currentLevelIndex];
+      const unrevealed = level.targets.filter(w => !solvedWords.has(w));
+      if (unrevealed.length > 0) {
+        const wordToHint = unrevealed[0];
+        solvedWords.add(wordToHint);
+        sound.playSuccess();
+        revealTargetWord(wordToHint);
+        triggerCelebration(wordToHint, 20);
+        updateScore(20);
+        updateProgress();
+
+        if (solvedWords.size === level.targets.length) {
+          setTimeout(handleLevelComplete, 600);
+        }
+      }
+    });
+
+    // Next Level Modal Button
+    document.getElementById('btn-next-level').addEventListener('click', () => {
+      initLevel(currentLevelIndex + 1);
+    });
+
+    // Toggle Sound Mute
+    btnToggleSound.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      if (sound.enabled) {
+        sound.init();
+        iconSound.setAttribute('data-lucide', 'volume-2');
+      } else {
+        iconSound.setAttribute('data-lucide', 'volume-x');
+      }
+      lucide.createIcons();
+    });
+
+    // User gesture activates audio context
+    window.addEventListener('click', () => {
+      sound.init();
+      if (audioHint) {
+        audioHint.style.opacity = '0';
+        setTimeout(() => audioHint.remove(), 500);
+      }
+    }, { once: true });
+
+    /* Initialize Icons & Level on Load */
+    window.addEventListener('load', () => {
+      lucide.createIcons();
+      initBubbles();
+      initLevel(0);
+    });
+  </script>
+</body>
+</html>
