@@ -6,8 +6,9 @@
   <title>QuadraWord - Ocean Tide</title>
   <style>
     :root {
+      --app-height: 100dvh;
       --bg-gradient: linear-gradient(180deg, #0972b2 0%, #064c7e 45%, #032d4e 100%);
-      --card-bg: rgba(6, 40, 68, 0.85);
+      --card-bg: rgba(6, 40, 68, 0.88);
       --card-border: rgba(255, 255, 255, 0.16);
       --tile-bg: #fffbf0;
       --tile-border: #f1dfbc;
@@ -31,30 +32,32 @@
       padding: 0;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: var(--app-height);
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
       background: #010d18;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100vw;
-      height: 100vh;
       overflow: hidden;
       position: fixed;
+      inset: 0;
     }
 
     .game-container {
       position: relative;
       width: 100%;
       max-width: 440px;
-      height: 100%;
-      max-height: 100vh;
+      height: var(--app-height);
+      max-height: var(--app-height);
       background: var(--bg-gradient);
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       overflow: hidden;
     }
 
@@ -130,35 +133,36 @@
     header {
       position: relative;
       z-index: 10;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 16px 6px;
+      padding: max(8px, env(safe-area-inset-top)) 14px 4px;
     }
 
     .level-badge {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
     }
 
     .badge-num {
-      width: 38px;
-      height: 38px;
+      width: 34px;
+      height: 34px;
       background: #f7b928;
       border: 2px solid #ffe893;
       box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       border-radius: 50%;
       color: #1a1608;
       font-weight: 900;
-      font-size: 17px;
+      font-size: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .title-group h1 {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 900;
       letter-spacing: 0.4px;
       display: flex;
@@ -185,25 +189,25 @@
     .top-stats {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .score-chip {
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 16px;
-      padding: 5px 11px;
+      padding: 4px 10px;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 12px;
       color: #ffd24d;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .icon-btn {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -212,17 +216,18 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .sub-bar {
       position: relative;
       z-index: 10;
+      flex-shrink: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 2px 16px 4px;
-      font-size: 12px;
+      padding: 2px 14px 4px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.5px;
     }
@@ -256,41 +261,44 @@
     .bonus-pill {
       background: #df9e19;
       color: #3b2302;
-      padding: 3px 9px;
+      padding: 3px 8px;
       border-radius: 10px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
     }
 
+    /* Flexible middle area that shrinks to protect the bottom letter bank */
     .ladder-board {
       position: relative;
       z-index: 10;
-      flex: 1;
+      flex: 1 1 auto;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 4px 12px;
+      gap: 5px;
+      padding: 2px 10px;
       overflow-y: auto;
     }
 
     .word-row {
       display: flex;
       gap: 5px;
+      flex-shrink: 0;
     }
 
     .ladder-cell {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       background: var(--ladder-bg);
       border: 2px solid var(--ladder-border);
-      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 3px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 2px 5px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 900;
       color: #fff;
       transition: all 0.3s ease;
@@ -299,7 +307,7 @@
     .ladder-cell.solved {
       background: var(--ladder-solved-bg);
       border-color: var(--ladder-solved-border);
-      box-shadow: 0 3px 0 #570fa3, 0 6px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 0 #570fa3, 0 5px 10px rgba(0,0,0,0.3);
       animation: popSolved 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -312,27 +320,29 @@
     .spelled-banner-container {
       position: relative;
       z-index: 10;
-      height: 40px;
+      flex-shrink: 0;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 2px;
     }
 
     .spelled-banner {
-      min-width: 150px;
-      height: 34px;
-      padding: 0 20px;
-      border-radius: 17px;
-      background: rgba(30, 20, 75, 0.7);
-      border: 2px solid rgba(193, 110, 255, 0.4);
+      min-width: 140px;
+      height: 30px;
+      padding: 0 18px;
+      border-radius: 15px;
+      background: rgba(30, 20, 75, 0.75);
+      border: 2px solid rgba(193, 110, 255, 0.45);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 900;
       letter-spacing: 2px;
       color: #fff;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .spelled-banner.shake {
@@ -347,13 +357,16 @@
       40%, 80% { transform: translateX(8px); }
     }
 
+    /* Protected bottom deck: flex-shrink: 0 + Android nav bar bottom padding */
     .bank-deck {
       position: relative;
       z-index: 10;
+      flex-shrink: 0;
+      width: 100%;
       background: var(--card-bg);
       border-top: 2px solid var(--card-border);
-      border-radius: 24px 24px 0 0;
-      padding: 12px 14px 20px;
+      border-radius: 22px 22px 0 0;
+      padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 12px));
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -382,7 +395,7 @@
       position: relative;
       z-index: 3;
       display: grid;
-      gap: 8px;
+      gap: 7px;
       width: 100%;
       height: 100%;
       touch-action: none;
@@ -400,12 +413,12 @@
     }
 
     .tile {
-      width: 54px;
-      height: 58px;
+      width: 52px;
+      height: 52px;
       background: var(--tile-bg);
       border: 2px solid var(--tile-border);
-      border-radius: 14px;
-      box-shadow: 0 4px 0 var(--tile-shadow), 0 6px 10px rgba(0,0,0,0.3);
+      border-radius: 13px;
+      box-shadow: 0 4px 0 var(--tile-shadow), 0 5px 8px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -417,7 +430,7 @@
     }
 
     .tile .char {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       color: var(--tile-text);
       line-height: 1;
@@ -425,15 +438,15 @@
 
     .tile .word-count {
       position: absolute;
-      top: 3px;
-      right: 4px;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
+      top: 2px;
+      right: 3px;
+      min-width: 15px;
+      height: 15px;
+      padding: 0 3px;
       background: #0d68a8;
       color: #ffffff;
       border-radius: 8px;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 900;
       display: flex;
       align-items: center;
@@ -483,7 +496,7 @@
 
     .float-chip {
       position: absolute;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
       color: #ffd533;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -525,7 +538,7 @@
       background: linear-gradient(180deg, #184877 0%, #0d2847 100%);
       border: 2px solid rgba(255, 255, 255, 0.25);
       border-radius: 24px;
-      padding: 22px 16px 20px;
+      padding: 20px 16px 18px;
       text-align: center;
       box-shadow: 0 16px 40px rgba(0,0,0,0.6);
       transform: scale(0.85);
@@ -556,8 +569,8 @@
 
     .trophy-svg-wrap {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 74px;
+      height: 74px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -612,7 +625,7 @@
     }
 
     .modal-card h2 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       color: #ffe66d;
       margin-bottom: 3px;
@@ -621,7 +634,7 @@
     .modal-card p.subtitle {
       font-size: 12px;
       opacity: 0.85;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .stats-summary {
@@ -630,7 +643,7 @@
       padding: 10px;
       display: flex;
       justify-content: space-around;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
@@ -681,7 +694,7 @@
       <div class="level-badge">
         <div class="badge-num" id="levelNum">1</div>
         <div class="title-group">
-          <h1>KateWord <span class="tag" id="zoneTag">2x5</span></h1>
+          <h1>QuadraWord <span class="tag" id="zoneTag">2x5</span></h1>
           <p id="dictStatus">Everyday English Words</p>
         </div>
       </div>
@@ -717,7 +730,7 @@
         <div class="flawless-emblem" id="flawlessEmblem">
           <div class="trophy-svg-wrap">
             <div class="starburst-rays"></div>
-            <svg width="68" height="68" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative; z-index:2;">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative; z-index:2;">
               <path d="M16 10H48V24C48 32.8366 40.8366 40 32 40C23.1634 40 16 32.8366 16 24V10Z" fill="#FFD700" stroke="#FFF3B0" stroke-width="2"/>
               <path d="M16 14H8V22C8 27.5228 11.5817 32 16 32V14Z" fill="#FFA000" stroke="#FFF3B0" stroke-width="2"/>
               <path d="M48 14H56V22C56 27.5228 52.4183 32 48 32V14Z" fill="#FFA000" stroke="#FFF3B0" stroke-width="2"/>
@@ -752,6 +765,17 @@
   </div>
 
   <script>
+    // Sync exact visible viewport height on Android Chrome / Samsung Internet
+    function syncMobileViewportHeight() {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${vh}px`);
+    }
+    window.addEventListener('resize', syncMobileViewportHeight);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', syncMobileViewportHeight);
+    }
+    syncMobileViewportHeight();
+
     const EVERYDAY_WORDS_URL = 'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears.txt';
     const FULL_DICT_URL = 'https://cdn.jsdelivr.net/npm/an-array-of-english-words@2.0.0/index.json';
 
@@ -1163,6 +1187,8 @@
 
     function startNewBoard() {
       stopConfetti();
+      syncMobileViewportHeight();
+
       const generated = generateRandomizedFullBoard();
       currentRows = generated.rows;
       currentCols = generated.cols;
@@ -1198,11 +1224,12 @@
         ladderBoard.appendChild(row);
       });
 
-      const rowHeight = currentRows === 3 ? 60 : 66;
-      gridWrapper.style.height = `${currentRows * rowHeight + (currentRows - 1) * 8}px`;
+      // Compact row heights for 3-row boards so they never clip on Android screens
+      const rowHeight = currentRows === 3 ? 52 : 58;
+      gridWrapper.style.height = `${currentRows * rowHeight + (currentRows - 1) * 7}px`;
       tilesGrid.style.gridTemplateColumns = `repeat(${currentCols}, 1fr)`;
       tilesGrid.style.gridTemplateRows = `repeat(${currentRows}, 1fr)`;
-      tilesGrid.style.maxWidth = `${currentCols * 68}px`;
+      tilesGrid.style.maxWidth = `${currentCols * 64}px`;
 
       tilesGrid.innerHTML = '';
       gridTiles = [];
@@ -1216,7 +1243,8 @@
           const tile = document.createElement('div');
           tile.className = 'tile';
           if (currentRows === 3) {
-            tile.style.height = '54px';
+            tile.style.height = '48px';
+            tile.style.width = '50px';
           }
           tile.dataset.index = index;
           tile.dataset.r = r;
