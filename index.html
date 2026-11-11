@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>QuadraWord - Ocean Tide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>KateWord - Ocean Tide</title>
   <style>
     :root {
       --bg-gradient: linear-gradient(180deg, #0972b2 0%, #064c7e 45%, #032d4e 100%);
-      --card-bg: rgba(6, 40, 68, 0.78);
+      --card-bg: rgba(6, 40, 68, 0.85);
       --card-border: rgba(255, 255, 255, 0.16);
       --tile-bg: #fffbf0;
       --tile-border: #f1dfbc;
@@ -35,31 +35,29 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-      background: #021a2e;
+      background: #010d18;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
+      position: fixed;
     }
 
     .game-container {
       position: relative;
       width: 100%;
       max-width: 440px;
-      height: 100vh;
-      max-height: 900px;
+      height: 100%;
+      max-height: 100vh;
       background: var(--bg-gradient);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
-      border-radius: 28px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.12);
     }
 
-    /* Confetti Celebration Canvas */
     #confettiCanvas {
       position: absolute;
       inset: 0;
@@ -69,7 +67,6 @@
       z-index: 250;
     }
 
-    /* Loading Overlay */
     .loading-overlay {
       position: absolute;
       inset: 0;
@@ -89,9 +86,9 @@
     }
 
     .spinner {
-      width: 48px;
-      height: 48px;
-      border: 5px solid rgba(255, 255, 255, 0.2);
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
       border-top-color: #ffd24d;
       border-radius: 50%;
       animation: spin 0.9s linear infinite;
@@ -103,8 +100,7 @@
 
     .loading-text {
       font-weight: 800;
-      font-size: 16px;
-      letter-spacing: 0.5px;
+      font-size: 15px;
       color: #ffe893;
     }
 
@@ -119,16 +115,16 @@
     .bubble {
       position: absolute;
       bottom: -40px;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.08));
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 50%;
       animation: rise linear infinite;
     }
 
     @keyframes rise {
       0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.2; }
-      50% { transform: translateY(-450px) translateX(18px) scale(1.05); opacity: 0.6; }
-      100% { transform: translateY(-950px) translateX(-14px) scale(1.2); opacity: 0; }
+      50% { transform: translateY(-400px) translateX(14px) scale(1.05); opacity: 0.5; }
+      100% { transform: translateY(-850px) translateX(-10px) scale(1.2); opacity: 0; }
     }
 
     header {
@@ -137,51 +133,51 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px 8px;
+      padding: 10px 16px 6px;
     }
 
     .level-badge {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .badge-num {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       background: #f7b928;
-      border: 3px solid #ffe893;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border: 2px solid #ffe893;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
       border-radius: 50%;
       color: #1a1608;
       font-weight: 900;
-      font-size: 19px;
+      font-size: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .title-group h1 {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .title-group span.tag {
-      font-size: 10px;
+      font-size: 9px;
       background: #eb2f74;
       color: #fff;
-      padding: 2px 7px;
-      border-radius: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
       font-weight: 800;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
     }
 
     .title-group p {
-      font-size: 11px;
+      font-size: 10px;
       opacity: 0.8;
       font-weight: 600;
     }
@@ -189,25 +185,25 @@
     .top-stats {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .score-chip {
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 18px;
-      padding: 6px 13px;
+      border-radius: 16px;
+      padding: 5px 11px;
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13px;
       color: #ffd24d;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .icon-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -216,54 +212,52 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
     }
 
-    /* Sub-bar with Words to Find + Hint Button on the Left, Bonus Pill on the Right */
     .sub-bar {
       position: relative;
       z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 20px 6px;
-      font-size: 13px;
+      padding: 2px 16px 4px;
+      font-size: 12px;
       font-weight: 800;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
     }
 
     .sub-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn-hint-inline {
       background: linear-gradient(135deg, #f5a623 0%, #d4820a 100%);
       color: #fff;
       border: 1px solid rgba(255, 240, 180, 0.6);
-      border-radius: 12px;
-      padding: 4px 11px;
+      border-radius: 10px;
+      padding: 3px 9px;
       font-weight: 900;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 4px;
-      box-shadow: 0 3px 0 #8f5303, 0 4px 8px rgba(0,0,0,0.25);
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      gap: 3px;
+      box-shadow: 0 2px 0 #8f5303, 0 3px 6px rgba(0,0,0,0.25);
     }
 
     .btn-hint-inline:active {
-      transform: translateY(2px);
+      transform: translateY(1px);
       box-shadow: 0 1px 0 #8f5303;
     }
 
     .bonus-pill {
       background: #df9e19;
       color: #3b2302;
-      padding: 4px 10px;
-      border-radius: 12px;
+      padding: 3px 9px;
+      border-radius: 10px;
       font-size: 11px;
       font-weight: 900;
     }
@@ -276,27 +270,27 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      padding: 4px 14px;
+      gap: 6px;
+      padding: 4px 12px;
       overflow-y: auto;
     }
 
     .word-row {
       display: flex;
-      gap: 6px;
+      gap: 5px;
     }
 
     .ladder-cell {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
       background: var(--ladder-bg);
       border: 2px solid var(--ladder-border);
-      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 4px 8px rgba(0, 0, 0, 0.22);
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 3px 6px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       color: #fff;
       transition: all 0.3s ease;
@@ -305,7 +299,7 @@
     .ladder-cell.solved {
       background: var(--ladder-solved-bg);
       border-color: var(--ladder-solved-border);
-      box-shadow: 0 4px 0 #570fa3, 0 8px 14px rgba(0,0,0,0.35);
+      box-shadow: 0 3px 0 #570fa3, 0 6px 12px rgba(0,0,0,0.3);
       animation: popSolved 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -318,40 +312,39 @@
     .spelled-banner-container {
       position: relative;
       z-index: 10;
-      height: 44px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .spelled-banner {
-      min-width: 170px;
-      height: 38px;
-      padding: 0 24px;
-      border-radius: 20px;
-      background: rgba(30, 20, 75, 0.65);
+      min-width: 150px;
+      height: 34px;
+      padding: 0 20px;
+      border-radius: 17px;
+      background: rgba(30, 20, 75, 0.7);
       border: 2px solid rgba(193, 110, 255, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
+      font-size: 17px;
       font-weight: 900;
       letter-spacing: 2px;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: all 0.15s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
     }
 
     .spelled-banner.shake {
       animation: bannerShake 0.35s ease;
-      background: rgba(180, 20, 40, 0.7);
+      background: rgba(180, 20, 40, 0.75);
       border-color: #ff6e87;
     }
 
     @keyframes bannerShake {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-10px); }
-      40%, 80% { transform: translateX(10px); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
     }
 
     .bank-deck {
@@ -359,8 +352,8 @@
       z-index: 10;
       background: var(--card-bg);
       border-top: 2px solid var(--card-border);
-      border-radius: 28px 28px 0 0;
-      padding: 16px 16px 22px;
+      border-radius: 24px 24px 0 0;
+      padding: 12px 14px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -373,7 +366,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: height 0.2s ease;
     }
 
     .svg-canvas {
@@ -390,7 +382,7 @@
       position: relative;
       z-index: 3;
       display: grid;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
       height: 100%;
       touch-action: none;
@@ -408,47 +400,44 @@
     }
 
     .tile {
-      width: 62px;
-      height: 66px;
+      width: 54px;
+      height: 58px;
       background: var(--tile-bg);
       border: 2px solid var(--tile-border);
-      border-radius: 16px;
-      box-shadow: 0 5px 0 var(--tile-shadow), 0 8px 12px rgba(0,0,0,0.35);
+      border-radius: 14px;
+      box-shadow: 0 4px 0 var(--tile-shadow), 0 6px 10px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
       touch-action: none;
       position: relative;
+      transition: transform 0.1s ease, background 0.1s ease;
     }
 
     .tile .char {
-      font-size: 27px;
+      font-size: 24px;
       font-weight: 900;
       color: var(--tile-text);
       line-height: 1;
     }
 
-    /* Word Count Badge (Top-Right of Tile) */
     .tile .word-count {
       position: absolute;
-      top: 4px;
-      right: 5px;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 5px;
+      top: 3px;
+      right: 4px;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
       background: #0d68a8;
       color: #ffffff;
-      border-radius: 9px;
-      font-size: 11px;
+      border-radius: 8px;
+      font-size: 10px;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s ease;
     }
 
     .tile .word-count.bump {
@@ -461,29 +450,15 @@
       100% { transform: scale(1); }
     }
 
-    /* Score Value Pip (Bottom-Right of Tile) */
-    .tile .pip {
-      position: absolute;
-      bottom: 4px;
-      right: 7px;
-      font-size: 10px;
-      font-weight: 900;
-      color: #c97a08;
-    }
-
     .tile.selected {
       background: var(--tile-sel-bg);
       border-color: #d687ff;
-      box-shadow: 0 5px 0 var(--tile-sel-shadow), 0 8px 16px rgba(189, 55, 236, 0.45);
-      transform: translateY(-4px) scale(1.06);
+      box-shadow: 0 4px 0 var(--tile-sel-shadow), 0 6px 14px rgba(189, 55, 236, 0.45);
+      transform: translateY(-3px) scale(1.05);
     }
 
     .tile.selected .char { color: #fff; }
-    .tile.selected .pip { color: #ffd880; }
-    .tile.selected .word-count {
-      background: #ffd24d;
-      color: #2b1142;
-    }
+    .tile.selected .word-count { background: #ffd24d; color: #2b1142; }
 
     .tile.hint-flash {
       animation: hintGlow 0.6s infinite alternate;
@@ -491,12 +466,12 @@
     }
 
     @keyframes hintGlow {
-      from { box-shadow: 0 0 8px #ffd54f; }
-      to { box-shadow: 0 0 22px #ff9800; transform: scale(1.08); }
+      from { box-shadow: 0 0 6px #ffd54f; }
+      to { box-shadow: 0 0 18px #ff9800; transform: scale(1.06); }
     }
 
     .tile.dismissed {
-      animation: tilePopOut 0.45s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: tilePopOut 0.4s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
       pointer-events: none;
     }
 
@@ -508,7 +483,7 @@
 
     .float-chip {
       position: absolute;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
       color: #ffd533;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -519,15 +494,14 @@
 
     @keyframes floatUp {
       0% { opacity: 0; transform: translateY(0) scale(0.7); }
-      20% { opacity: 1; transform: translateY(-10px) scale(1.1); }
-      100% { opacity: 0; transform: translateY(-45px) scale(1); }
+      20% { opacity: 1; transform: translateY(-8px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-40px) scale(1); }
     }
 
-    /* Victory Modal & Flawless Graphic Styles */
     .modal-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(3, 18, 33, 0.85);
+      background: rgba(3, 18, 33, 0.88);
       backdrop-filter: blur(6px);
       z-index: 200;
       display: flex;
@@ -536,7 +510,7 @@
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
     }
 
     .modal-overlay.active {
@@ -547,51 +521,43 @@
     .modal-card {
       position: relative;
       width: 88%;
-      max-width: 350px;
+      max-width: 330px;
       background: linear-gradient(180deg, #184877 0%, #0d2847 100%);
       border: 2px solid rgba(255, 255, 255, 0.25);
-      border-radius: 28px;
-      padding: 26px 20px 24px;
+      border-radius: 24px;
+      padding: 22px 16px 20px;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-      transform: scale(0.8);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       overflow: hidden;
     }
 
     .modal-card.flawless-glow {
       background: linear-gradient(180deg, #3a1c71 0%, #1c2541 100%);
       border: 3px solid #ffd700;
-      box-shadow: 0 0 40px rgba(255, 215, 0, 0.45), 0 20px 50px rgba(0,0,0,0.7);
+      box-shadow: 0 0 35px rgba(255, 215, 0, 0.4), 0 16px 40px rgba(0,0,0,0.7);
     }
 
     .modal-overlay.active .modal-card {
       transform: scale(1);
     }
 
-    /* Animated Trophy / Starburst Graphic for 0 Wrong Guesses */
     .flawless-emblem {
       display: none;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .flawless-emblem.show {
       display: flex;
-      animation: emblemPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes emblemPop {
-      0% { transform: scale(0) rotate(-25deg); opacity: 0; }
-      70% { transform: scale(1.15) rotate(5deg); opacity: 1; }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
 
     .trophy-svg-wrap {
       position: relative;
-      width: 96px;
-      height: 96px;
+      width: 80px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -599,7 +565,7 @@
 
     .starburst-rays {
       position: absolute;
-      inset: -12px;
+      inset: -10px;
       border-radius: 50%;
       background: conic-gradient(
         from 0deg,
@@ -624,9 +590,7 @@
         transparent 270deg 285deg,
         rgba(255, 215, 0, 0.28) 285deg 300deg,
         transparent 300deg 315deg,
-        rgba(255, 215, 0, 0.28) 315deg 330deg,
-        transparent 330deg 345deg,
-        rgba(255, 215, 0, 0.28) 345deg 360deg
+        rgba(255, 215, 0, 0.28) 315deg 360deg
       );
       animation: spinRays 10s linear infinite;
     }
@@ -636,73 +600,64 @@
     }
 
     .flawless-ribbon {
-      margin-top: 6px;
+      margin-top: 4px;
       background: linear-gradient(90deg, #ff9800, #ffd700, #ff9800);
       color: #2b1200;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
-      padding: 4px 14px;
-      border-radius: 14px;
-      letter-spacing: 1px;
-      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
-      animation: pulseRibbon 1.2s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulseRibbon {
-      from { transform: scale(1); }
-      to { transform: scale(1.07); }
+      padding: 3px 12px;
+      border-radius: 12px;
+      letter-spacing: 0.8px;
+      box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
     }
 
     .modal-card h2 {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       color: #ffe66d;
-      margin-bottom: 4px;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+      margin-bottom: 3px;
     }
 
     .modal-card p.subtitle {
-      font-size: 13px;
-      opacity: 0.88;
-      margin-bottom: 18px;
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 14px;
     }
 
     .stats-summary {
       background: rgba(2, 16, 30, 0.5);
-      border-radius: 16px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 10px;
       display: flex;
       justify-content: space-around;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .stat-item .val {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 900;
       color: #64ffda;
     }
 
     .stat-item .lbl {
-      font-size: 10px;
+      font-size: 9px;
       opacity: 0.75;
       text-transform: uppercase;
       font-weight: 700;
-      margin-top: 2px;
     }
 
     .modal-btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: linear-gradient(135deg, #1fa75f 0%, #157943 100%);
       border: 2px solid #57ea9c;
-      border-radius: 18px;
-      font-size: 17px;
+      border-radius: 16px;
+      font-size: 16px;
       font-weight: 900;
       color: #fff;
       cursor: pointer;
-      box-shadow: 0 6px 14px rgba(31, 167, 95, 0.45);
-      transition: transform 0.1s ease;
+      box-shadow: 0 4px 10px rgba(31, 167, 95, 0.4);
     }
 
     .modal-btn:active {
@@ -713,13 +668,11 @@
 <body>
 
   <div class="game-container" id="gameApp">
-    <!-- Celebration Confetti Canvas -->
     <canvas id="confettiCanvas"></canvas>
 
-    <!-- Dictionary Loading Screen -->
     <div class="loading-overlay" id="loadingOverlay">
       <div class="spinner"></div>
-      <div class="loading-text" id="loadingText">Loading Everyday Vocabulary...</div>
+      <div class="loading-text" id="loadingText">Loading Mobile Vocabulary...</div>
     </div>
 
     <div class="bubble-layer" id="bubbleLayer"></div>
@@ -738,7 +691,6 @@
       </div>
     </header>
 
-    <!-- Sub-header with Words to Find + Hint Button on the Left -->
     <div class="sub-bar">
       <div class="sub-left">
         <div>WORDS TO FIND: <span id="solvedCount">0</span>/<span id="totalCount">5</span></div>
@@ -753,7 +705,6 @@
       <div class="spelled-banner" id="spelledBanner"></div>
     </div>
 
-    <!-- Clean Letter Bank Deck -->
     <div class="bank-deck">
       <div class="grid-wrapper" id="gridWrapper">
         <svg class="svg-canvas" id="svgCanvas"></svg>
@@ -761,34 +712,24 @@
       </div>
     </div>
 
-    <!-- Victory / Flawless Celebration Modal -->
     <div class="modal-overlay" id="victoryModal">
       <div class="modal-card" id="victoryCard">
-        <!-- Special Celebration Graphic for Zero Wrong Guesses -->
         <div class="flawless-emblem" id="flawlessEmblem">
           <div class="trophy-svg-wrap">
             <div class="starburst-rays"></div>
-            <svg width="76" height="76" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative; z-index:2; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.45));">
-              <path d="M16 10H48V24C48 32.8366 40.8366 40 32 40C23.1634 40 16 32.8366 16 24V10Z" fill="url(#goldGrad)" stroke="#FFF3B0" stroke-width="2"/>
+            <svg width="68" height="68" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:relative; z-index:2;">
+              <path d="M16 10H48V24C48 32.8366 40.8366 40 32 40C23.1634 40 16 32.8366 16 24V10Z" fill="#FFD700" stroke="#FFF3B0" stroke-width="2"/>
               <path d="M16 14H8V22C8 27.5228 11.5817 32 16 32V14Z" fill="#FFA000" stroke="#FFF3B0" stroke-width="2"/>
               <path d="M48 14H56V22C56 27.5228 52.4183 32 48 32V14Z" fill="#FFA000" stroke="#FFF3B0" stroke-width="2"/>
               <rect x="28" y="40" width="8" height="12" fill="#FFA000"/>
-              <path d="M20 52H44L46 58H18L20 52Z" fill="url(#goldGrad)" stroke="#FFF3B0" stroke-width="2"/>
-              <path d="M32 17L34.9 22.8L41.3 23.7L36.6 28.2L37.7 34.6L32 31.6L26.3 34.6L27.4 28.2L22.7 23.7L29.1 22.8L32 17Z" fill="#FFF9C4"/>
-              <defs>
-                <linearGradient id="goldGrad" x1="16" y1="10" x2="48" y2="58" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#FFE57F"/>
-                  <stop offset="0.5" stop-color="#FFD700"/>
-                  <stop offset="1" stop-color="#FF8F00"/>
-                </linearGradient>
-              </defs>
+              <path d="M20 52H44L46 58H18L20 52Z" fill="#FFD700" stroke="#FFF3B0" stroke-width="2"/>
             </svg>
           </div>
           <div class="flawless-ribbon">✨ FLAWLESS! 0 MISTAKES (+250 PTS) ✨</div>
         </div>
 
         <h2 id="victoryTitle">BOARD CLEARED!</h2>
-        <p class="subtitle" id="victorySubtitle">Generating a new randomized grid...</p>
+        <p class="subtitle" id="victorySubtitle">Generating a new mobile reef...</p>
 
         <div class="stats-summary">
           <div class="stat-item">
@@ -811,7 +752,6 @@
   </div>
 
   <script>
-    // Public Dictionary URLs
     const EVERYDAY_WORDS_URL = 'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears.txt';
     const FULL_DICT_URL = 'https://cdn.jsdelivr.net/npm/an-array-of-english-words@2.0.0/index.json';
 
@@ -924,11 +864,9 @@
 
     const sound = new SoundFX();
 
-    // Dynamic Dictionary Stores
     let fullDictionarySet = new Set();
     let commonWordsList = [];
 
-    // Current Game State
     let boardNumber = 1;
     let score = 0;
     let currentRows = 2;
@@ -943,7 +881,6 @@
     let wrongGuessesOnBoard = 0;
     let totalAttemptsOnBoard = 0;
 
-    // DOM Elements
     const loadingOverlay = document.getElementById('loadingOverlay');
     const loadingText = document.getElementById('loadingText');
     const dictStatus = document.getElementById('dictStatus');
@@ -973,20 +910,18 @@
     let confettiParticles = [];
     let confettiAnimId = null;
 
-    // Create Underwater Bubbles
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 12; i++) {
       const b = document.createElement('div');
       b.className = 'bubble';
-      const size = Math.random() * 22 + 10;
+      const size = Math.random() * 18 + 8;
       b.style.width = `${size}px`;
       b.style.height = `${size}px`;
       b.style.left = `${Math.random() * 95}%`;
-      b.style.animationDuration = `${Math.random() * 5 + 4}s`;
+      b.style.animationDuration = `${Math.random() * 4 + 3}s`;
       b.style.animationDelay = `${Math.random() * 4}s`;
       bubbleLayer.appendChild(b);
     }
 
-    // Celebration Confetti & Starburst Particle Engine
     function launchFlawlessCelebrationGraphic() {
       confettiCanvas.width = confettiCanvas.parentElement.clientWidth;
       confettiCanvas.height = confettiCanvas.parentElement.clientHeight;
@@ -994,18 +929,18 @@
 
       const colors = ['#FFD700', '#FF4081', '#00E5FF', '#69F0AE', '#FFAB40', '#E040FB', '#FFFFFF'];
 
-      for (let i = 0; i < 110; i++) {
+      for (let i = 0; i < 90; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 7 + 2;
+        const speed = Math.random() * 6 + 2;
         confettiParticles.push({
           x: confettiCanvas.width / 2,
-          y: confettiCanvas.height * 0.42,
+          y: confettiCanvas.height * 0.4,
           vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 3,
-          size: Math.random() * 8 + 5,
+          vy: Math.sin(angle) * speed - 2,
+          size: Math.random() * 7 + 4,
           color: colors[Math.floor(Math.random() * colors.length)],
           rotation: Math.random() * 360,
-          rotSpeed: (Math.random() - 0.5) * 12,
+          rotSpeed: (Math.random() - 0.5) * 10,
           isStar: Math.random() < 0.35,
           alpha: 1
         });
@@ -1020,12 +955,12 @@
         for (const p of confettiParticles) {
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.16; // gravity
+          p.vy += 0.15;
           p.vx *= 0.99;
           p.rotation += p.rotSpeed;
-          p.alpha -= 0.006;
+          p.alpha -= 0.007;
 
-          if (p.alpha > 0 && p.y < confettiCanvas.height + 30) {
+          if (p.alpha > 0 && p.y < confettiCanvas.height + 20) {
             active = true;
             confettiCtx.save();
             confettiCtx.globalAlpha = Math.max(0, p.alpha);
@@ -1034,7 +969,6 @@
             confettiCtx.fillStyle = p.color;
 
             if (p.isStar) {
-              // Draw 4-point sparkle star
               confettiCtx.beginPath();
               const r = p.size;
               confettiCtx.moveTo(0, -r);
@@ -1075,7 +1009,7 @@
 
     async function loadDictionaries() {
       try {
-        loadingText.textContent = 'Loading Everyday English Words...';
+        loadingText.textContent = 'Loading Vocabulary...';
         const [commonRes, fullRes] = await Promise.all([
           fetch(EVERYDAY_WORDS_URL),
           fetch(FULL_DICT_URL)
@@ -1105,11 +1039,10 @@
         startNewBoard();
       } catch (err) {
         console.error('Dictionary fetch error:', err);
-        loadingText.textContent = 'Network Error: Unable to reach dictionary CDN.';
+        loadingText.textContent = 'Network Error.';
       }
     }
 
-    // Randomly chooses grid dimensions between 2x3 (6 letters) and 3x5 (15 letters)
     function generateRandomizedFullBoard() {
       const vowels = ['A', 'E', 'I', 'O', 'U'];
       const commonConsonants = ['R', 'S', 'T', 'L', 'N', 'C', 'D', 'M', 'P', 'B', 'G', 'H', 'F', 'W', 'K'];
@@ -1145,7 +1078,6 @@
           }
 
           const boardChars = new Set(boardLetters);
-
           const candidates = [];
           for (const word of commonWordsList) {
             let possible = true;
@@ -1206,9 +1138,7 @@
       const remainingTargets = currentTargets.filter(w => !solvedTargets.has(w));
       let count = 0;
       for (const word of remainingTargets) {
-        if (word.includes(char)) {
-          count++;
-        }
+        if (word.includes(char)) count++;
       }
       return count;
     }
@@ -1221,7 +1151,6 @@
 
         const newCount = getWordCountForChar(t.char);
         const oldCount = parseInt(badgeEl.textContent, 10);
-
         badgeEl.textContent = newCount;
 
         if (animate && oldCount !== newCount && newCount > 0) {
@@ -1240,9 +1169,8 @@
       currentGrid = generated.grid;
       currentTargets = generated.targets;
 
-      const totalLetters = currentRows * currentCols;
       zoneTag.textContent = `${currentRows}×${currentCols}`;
-      dictStatus.textContent = `${totalLetters} Letters Pool • Common English`;
+      dictStatus.textContent = `${currentRows * currentCols} Letters Pool`;
 
       solvedTargets.clear();
       bonusWordsFound.clear();
@@ -1256,7 +1184,6 @@
       levelNum.textContent = boardNumber;
       updateHeaderStats();
 
-      // Render Target Ladder
       ladderBoard.innerHTML = '';
       currentTargets.forEach(word => {
         const row = document.createElement('div');
@@ -1271,14 +1198,12 @@
         ladderBoard.appendChild(row);
       });
 
-      // Dynamically size Grid CSS for currentRows x currentCols
-      const rowHeight = currentRows === 3 ? 68 : 78;
-      gridWrapper.style.height = `${currentRows * rowHeight + (currentRows - 1) * 10}px`;
+      const rowHeight = currentRows === 3 ? 60 : 66;
+      gridWrapper.style.height = `${currentRows * rowHeight + (currentRows - 1) * 8}px`;
       tilesGrid.style.gridTemplateColumns = `repeat(${currentCols}, 1fr)`;
       tilesGrid.style.gridTemplateRows = `repeat(${currentRows}, 1fr)`;
-      tilesGrid.style.maxWidth = `${currentCols * 76}px`;
+      tilesGrid.style.maxWidth = `${currentCols * 68}px`;
 
-      // Render Dynamic Letter Grid (Guaranteed 100% Full)
       tilesGrid.innerHTML = '';
       gridTiles = [];
       let index = 0;
@@ -1291,7 +1216,7 @@
           const tile = document.createElement('div');
           tile.className = 'tile';
           if (currentRows === 3) {
-            tile.style.height = '60px';
+            tile.style.height = '54px';
           }
           tile.dataset.index = index;
           tile.dataset.r = r;
@@ -1299,11 +1224,9 @@
           tile.dataset.char = char;
 
           const wordCount = getWordCountForChar(char);
-          const pips = "CMPBFHVWYK".includes(char) ? '+5' : '+1';
           tile.innerHTML = `
-            <span class="word-count" title="Remaining target words using ${char}">${wordCount}</span>
+            <span class="word-count">${wordCount}</span>
             <span class="char">${char}</span>
-            <span class="pip">${pips}</span>
           `;
 
           slot.appendChild(tile);
@@ -1333,9 +1256,7 @@
     }
 
     function isOrthogonal(t1, t2) {
-      const dr = Math.abs(t1.r - t2.r);
-      const dc = Math.abs(t1.c - t2.c);
-      return (dr + dc === 1);
+      return (Math.abs(t1.r - t2.r) + Math.abs(t1.c - t2.c) === 1);
     }
 
     function findWordPath(word, availableTiles) {
@@ -1365,7 +1286,6 @@
 
     function pruneUnneededLetters() {
       const remainingTargets = currentTargets.filter(w => !solvedTargets.has(w));
-
       updateTileWordCounts(true);
 
       if (remainingTargets.length === 0) {
@@ -1418,12 +1338,12 @@
         victoryCard.classList.add('flawless-glow');
         flawlessEmblem.classList.add('show');
         victoryTitle.textContent = 'PERFECT CLEAR!';
-        victorySubtitle.textContent = 'Not a single wrong guess on this board!';
+        victorySubtitle.textContent = '0 mistakes on this board!';
       } else {
         victoryCard.classList.remove('flawless-glow');
         flawlessEmblem.classList.remove('show');
         victoryTitle.textContent = 'BOARD CLEARED!';
-        victorySubtitle.textContent = 'Ready for the next randomized reef?';
+        victorySubtitle.textContent = 'Ready for the next mobile reef?';
       }
 
       const accuracy = totalAttemptsOnBoard > 0
@@ -1437,10 +1357,8 @@
 
       setTimeout(() => {
         victoryModal.classList.add('active');
-        if (isFlawless) {
-          launchFlawlessCelebrationGraphic();
-        }
-      }, 550);
+        if (isFlawless) launchFlawlessCelebrationGraphic();
+      }, 500);
     }
 
     function setupPointerEvents() {
@@ -1534,10 +1452,9 @@
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke', '#d359ff');
-      path.setAttribute('stroke-width', '8');
+      path.setAttribute('stroke-width', '7');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
-      path.style.filter = 'drop-shadow(0 0 8px rgba(220, 100, 255, 0.9))';
       svgCanvas.appendChild(path);
     }
 
@@ -1548,7 +1465,7 @@
       chip.style.left = `${x}px`;
       chip.style.top = `${y}px`;
       document.body.appendChild(chip);
-      setTimeout(() => chip.remove(), 800);
+      setTimeout(() => chip.remove(), 700);
     }
 
     function submitWord() {
@@ -1556,12 +1473,11 @@
       const bannerRect = spelledBanner.getBoundingClientRect();
       totalAttemptsOnBoard++;
 
-      // 1. Check Target Ladder Words
       if (currentTargets.includes(word) && !solvedTargets.has(word)) {
         solvedTargets.add(word);
         sound.success();
         score += word.length * 60;
-        showFloatScore(`+${word.length * 60}`, bannerRect.left + 50, bannerRect.top - 10);
+        showFloatScore(`+${word.length * 60}`, bannerRect.left + 40, bannerRect.top - 10);
 
         const row = document.querySelector(`.word-row[data-word="${word}"]`);
         if (row) {
@@ -1578,18 +1494,16 @@
         return;
       }
 
-      // 2. Check Public 275,000+ Word Dictionary for Bonus Words
       if (fullDictionarySet.has(word) && !bonusWordsFound.has(word) && !currentTargets.includes(word)) {
         bonusWordsFound.add(word);
         sound.success();
         score += 25;
-        showFloatScore(`+25 (${word})`, bannerRect.left + 25, bannerRect.top - 10);
+        showFloatScore(`+25`, bannerRect.left + 30, bannerRect.top - 10);
         updateHeaderStats();
         clearSelection();
         return;
       }
 
-      // 3. If word was already found, don't penalize accuracy—just clear
       if (solvedTargets.has(word) || bonusWordsFound.has(word)) {
         totalAttemptsOnBoard--;
         sound.tap();
@@ -1597,7 +1511,6 @@
         return;
       }
 
-      // 4. Genuine Wrong Guess -> Increment wrongGuessesOnBoard
       wrongGuessesOnBoard++;
       sound.error();
       spelledBanner.classList.add('shake');
@@ -1607,7 +1520,6 @@
       }, 400);
     }
 
-    // Smart Hint: Flashes the exact tile path on the grid and reveals 1 letter in the ladder
     document.getElementById('hintBtn').addEventListener('click', () => {
       const remaining = currentTargets.filter(w => !solvedTargets.has(w));
       if (remaining.length === 0) return;
@@ -1628,9 +1540,7 @@
       if (!pathIndices) return;
 
       sound.tap();
-      pathIndices.forEach(idx => {
-        gridTiles[idx].el.classList.add('hint-flash');
-      });
+      pathIndices.forEach(idx => gridTiles[idx].el.classList.add('hint-flash'));
 
       const row = document.querySelector(`.word-row[data-word="${targetWord}"]`);
       if (row) {
@@ -1661,7 +1571,6 @@
       startNewBoard();
     });
 
-    // Boot up and fetch public dictionaries
     loadDictionaries();
   </script>
 </body>
