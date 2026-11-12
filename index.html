@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>QuadraWord - Ocean Tide</title>
+  <title>KateWord - Ocean Tide</title>
   <style>
     :root {
       --app-height: 100dvh;
@@ -267,7 +267,6 @@
       font-weight: 900;
     }
 
-    /* Flexible middle area that shrinks to protect the bottom letter bank */
     .ladder-board {
       position: relative;
       z-index: 10;
@@ -357,7 +356,6 @@
       40%, 80% { transform: translateX(8px); }
     }
 
-    /* Protected bottom deck: flex-shrink: 0 + Android nav bar bottom padding */
     .bank-deck {
       position: relative;
       z-index: 10;
@@ -694,8 +692,8 @@
       <div class="level-badge">
         <div class="badge-num" id="levelNum">1</div>
         <div class="title-group">
-          <h1>QuadraWord <span class="tag" id="zoneTag">2x5</span></h1>
-          <p id="dictStatus">Everyday English Words</p>
+          <h1>KateWord <span class="tag" id="zoneTag">2x5</span></h1>
+          <p id="dictStatus">Tight-Fit Board</p>
         </div>
       </div>
       <div class="top-stats">
@@ -765,7 +763,6 @@
   </div>
 
   <script>
-    // Sync exact visible viewport height on Android Chrome / Samsung Internet
     function syncMobileViewportHeight() {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${vh}px`);
@@ -1050,7 +1047,7 @@
         });
 
         const lines = commonText.split(/\r?\n/);
-        for (let i = 0; i < Math.min(lines.length, 4000); i++) {
+        for (let i = 0; i < Math.min(lines.length, 3800); i++) {
           const upper = lines[i].trim().toUpperCase();
           if (upper.length >= 3 && upper.length <= 6 && /^[A-Z]+$/.test(upper)) {
             if (fullDictionarySet.has(upper) && isCleanEverydayWord(upper)) {
@@ -1067,6 +1064,9 @@
       }
     }
 
+    // Tight-Fit Board Generator:
+    // Searches for a grid where ALL spawned tiles are covered by the target words
+    // AND minimizes leftover "non-target" words so the player rarely stumbles into non-target words!
     function generateRandomizedFullBoard() {
       const vowels = ['A', 'E', 'I', 'O', 'U'];
       const commonConsonants = ['R', 'S', 'T', 'L', 'N', 'C', 'D', 'M', 'P', 'B', 'G', 'H', 'F', 'W', 'K'];
@@ -1074,88 +1074,111 @@
       const rowsOptions = [2, 3];
       const colsOptions = [3, 4, 5];
 
-      for (let outerAttempt = 0; outerAttempt < 20; outerAttempt++) {
-        const rows = rowsOptions[Math.floor(Math.random() * rowsOptions.length)];
-        const cols = colsOptions[Math.floor(Math.random() * colsOptions.length)];
-        const totalTiles = rows * cols;
-        const targetWordCount = totalTiles <= 8 ? 4 : (totalTiles <= 10 ? 5 : 6);
+      const rows = rowsOptions[Math.floor(Math.random() * rowsOptions.length)];
+      const cols = colsOptions[Math.floor(Math.random() * colsOptions.length)];
+      const totalTiles = rows * cols;
+      const minTargetWords = totalTiles <= 8 ? 3 : 4;
+      const maxTargetWords = 6; // Max rows that comfortably fit in the top ladder on mobile
 
-        for (let attempt = 0; attempt < 250; attempt++) {
-          const numVowels = Math.min(5, Math.max(2, Math.round(totalTiles * 0.38)));
-          const numConsonants = totalTiles - numVowels;
+      let bestBoard = null;
+      let lowestExtraWords = Infinity;
 
-          const vPool = [...vowels].sort(() => Math.random() - 0.5).slice(0, numVowels);
-          const cPool = [...commonConsonants].sort(() => Math.random() - 0.5).slice(0, numConsonants);
-          const boardLetters = [...vPool, ...cPool].sort(() => Math.random() - 0.5);
+      // Sample candidate boards and keep the one with the FEWEST extra non-target words
+      for (let attempt = 0; attempt < 320; attempt++) {
+        // Use slightly fewer vowels (2 to 3) so random unintended 3-letter words don't form everywhere
+        const numVowels = totalTiles <= 8 ? 2 : 3;
+        const numConsonants = totalTiles - numVowels;
 
-          const grid = [];
-          for (let r = 0; r < rows; r++) {
-            grid.push(boardLetters.slice(r * cols, (r + 1) * cols));
+        const vPool = [...vowels].sort(() => Math.random() - 0.5).slice(0, numVowels);
+        const cPool = [...commonConsonants].sort(() => Math.random() - 0.5).slice(0, numConsonants);
+        const boardLetters = [...vPool, ...cPool].sort(() => Math.random() - 0.5);
+
+        const grid = [];
+        for (let r = 0; r < rows; r++) {
+          grid.push(boardLetters.slice(r * cols, (r + 1) * cols));
+        }
+
+        const tempTiles = [];
+        let idx = 0;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            tempTiles.push({ r, c, char: grid[r][c], index: idx++ });
           }
+        }
 
-          const tempTiles = [];
-          let idx = 0;
-          for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-              tempTiles.push({ r, c, char: grid[r][c], index: idx++ });
-            }
-          }
+        const boardChars = new Set(boardLetters);
+        const candidates = [];
 
-          const boardChars = new Set(boardLetters);
-          const candidates = [];
-          for (const word of commonWordsList) {
-            let possible = true;
-            for (let i = 0; i < word.length; i++) {
-              if (!boardChars.has(word[i])) {
-                possible = false;
-                break;
-              }
-            }
-            if (possible) {
-              const path = findWordPath(word, tempTiles);
-              if (path !== null) {
-                candidates.push({ word, path });
-              }
-            }
-          }
-
-          if (candidates.length < targetWordCount + 1) continue;
-
-          const shuffledCandidates = [...candidates].sort(() => Math.random() - 0.5);
-          const selectedWords = [];
-          const coveredIndices = new Set();
-
-          for (let step = 0; step < targetWordCount; step++) {
-            let bestCandidate = null;
-            let bestScore = -1;
-
-            for (const cand of shuffledCandidates) {
-              if (selectedWords.includes(cand.word)) continue;
-              let newCount = 0;
-              for (const tileIdx of cand.path) {
-                if (!coveredIndices.has(tileIdx)) newCount++;
-              }
-              const lengthBonus = (cand.word.length >= 4) ? 0.35 : 0;
-              const totalScore = newCount + lengthBonus;
-
-              if (totalScore > bestScore) {
-                bestScore = totalScore;
-                bestCandidate = cand;
-              }
-            }
-
-            if (bestCandidate) {
-              selectedWords.push(bestCandidate.word);
-              bestCandidate.path.forEach(idx => coveredIndices.add(idx));
+        for (const word of commonWordsList) {
+          let possible = true;
+          for (let i = 0; i < word.length; i++) {
+            if (!boardChars.has(word[i])) {
+              possible = false;
+              break;
             }
           }
+          if (possible) {
+            const path = findWordPath(word, tempTiles);
+            if (path !== null) {
+              candidates.push({ word, path });
+            }
+          }
+        }
 
-          if (selectedWords.length === targetWordCount && coveredIndices.size === totalTiles) {
-            selectedWords.sort((a, b) => a.length - b.length || a.localeCompare(b));
-            return { rows, cols, grid, targets: selectedWords };
+        if (candidates.length < minTargetWords) continue;
+
+        // Greedily pick words to cover all 100% of tiles on the board
+        const shuffledCandidates = [...candidates].sort(() => Math.random() - 0.5);
+        const selectedWords = [];
+        const coveredIndices = new Set();
+
+        while (selectedWords.length < maxTargetWords && selectedWords.length < candidates.length) {
+          // If all tiles are already covered and we have enough words, we only add remaining
+          // common words up to maxTargetWords so they become targets instead of annoying bonus words!
+          let bestCandidate = null;
+          let bestScore = -1;
+
+          for (const cand of shuffledCandidates) {
+            if (selectedWords.includes(cand.word)) continue;
+            let newCount = 0;
+            for (const tileIdx of cand.path) {
+              if (!coveredIndices.has(tileIdx)) newCount++;
+            }
+            const lengthBonus = (cand.word.length >= 4) ? 0.4 : 0;
+            const totalScore = newCount + lengthBonus;
+
+            if (totalScore > bestScore) {
+              bestScore = totalScore;
+              bestCandidate = cand;
+            }
+          }
+
+          if (bestCandidate) {
+            selectedWords.push(bestCandidate.word);
+            bestCandidate.path.forEach(idx => coveredIndices.add(idx));
+          } else {
+            break;
+          }
+        }
+
+        // Must cover 100% of tiles on the grid
+        if (coveredIndices.size === totalTiles && selectedWords.length >= minTargetWords) {
+          const extraCommonWords = candidates.length - selectedWords.length;
+
+          if (extraCommonWords < lowestExtraWords) {
+            lowestExtraWords = extraCommonWords;
+            const sorted = [...selectedWords].sort((a, b) => a.length - b.length || a.localeCompare(b));
+            bestBoard = { rows, cols, grid, targets: sorted, extraCommonWords };
+
+            // Ideal tight board found: 0 extra common words left outside the top ladder!
+            if (extraCommonWords === 0) {
+              return bestBoard;
+            }
           }
         }
       }
+
+      return bestBoard;
     }
 
     function getWordCountForChar(char) {
@@ -1189,14 +1212,19 @@
       stopConfetti();
       syncMobileViewportHeight();
 
-      const generated = generateRandomizedFullBoard();
+      let generated = generateRandomizedFullBoard();
+      // Fallback retry if a rare 3x5 combination needed another pass
+      while (!generated) {
+        generated = generateRandomizedFullBoard();
+      }
+
       currentRows = generated.rows;
       currentCols = generated.cols;
       currentGrid = generated.grid;
       currentTargets = generated.targets;
 
       zoneTag.textContent = `${currentRows}×${currentCols}`;
-      dictStatus.textContent = `${currentRows * currentCols} Letters Pool`;
+      dictStatus.textContent = `${currentRows * currentCols} Letters • Tight-Fit Pool`;
 
       solvedTargets.clear();
       bonusWordsFound.clear();
@@ -1224,7 +1252,6 @@
         ladderBoard.appendChild(row);
       });
 
-      // Compact row heights for 3-row boards so they never clip on Android screens
       const rowHeight = currentRows === 3 ? 52 : 58;
       gridWrapper.style.height = `${currentRows * rowHeight + (currentRows - 1) * 7}px`;
       tilesGrid.style.gridTemplateColumns = `repeat(${currentCols}, 1fr)`;
@@ -1526,7 +1553,7 @@
         bonusWordsFound.add(word);
         sound.success();
         score += 25;
-        showFloatScore(`+25`, bannerRect.left + 30, bannerRect.top - 10);
+        showFloatScore(`+25 (${word})`, bannerRect.left + 25, bannerRect.top - 10);
         updateHeaderStats();
         clearSelection();
         return;
