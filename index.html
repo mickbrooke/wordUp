@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>wordUp</title>
+  <title>QuadraWord</title>
   <style>
     :root {
       --app-height: 100dvh;
@@ -21,6 +21,48 @@
       --ladder-border: rgba(255, 255, 255, 0.32);
       --ladder-solved-bg: linear-gradient(135deg, #a836eb 0%, #7e17cb 100%);
       --ladder-solved-border: #dca7ff;
+    }
+
+    /* Theme 2: Sunset Reef */
+    [data-theme="sunset"] {
+      --bg-gradient: linear-gradient(180deg, #ff5e62 0%, #a83279 50%, #2b1055 100%);
+      --card-bg: rgba(43, 16, 85, 0.88);
+      --tile-bg: #fff5f5;
+      --tile-border: #ffd6d6;
+      --tile-shadow: #d94b78;
+      --tile-text: #2b1055;
+      --tile-sel-bg: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+      --tile-sel-shadow: #9e1f24;
+      --ladder-solved-bg: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+      --ladder-solved-border: #ffe0cc;
+    }
+
+    /* Theme 3: Neon Abyss (Dark Synth) */
+    [data-theme="synth"] {
+      --bg-gradient: linear-gradient(180deg, #141e30 0%, #0f0c29 50%, #05050a 100%);
+      --card-bg: rgba(15, 12, 41, 0.92);
+      --tile-bg: #1e293b;
+      --tile-border: #38bdf8;
+      --tile-shadow: #0284c7;
+      --tile-text: #f8fafc;
+      --tile-sel-bg: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
+      --tile-sel-shadow: #6b21a8;
+      --ladder-solved-bg: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      --ladder-solved-border: #a5f3fc;
+    }
+
+    /* Theme 4: Kelp Forest */
+    [data-theme="forest"] {
+      --bg-gradient: linear-gradient(180deg, #136a8a 0%, #0f4c3a 50%, #06231d 100%);
+      --card-bg: rgba(6, 35, 29, 0.88);
+      --tile-bg: #f4fce3;
+      --tile-border: #d8f5a2;
+      --tile-shadow: #5c940d;
+      --tile-text: #06231d;
+      --tile-sel-bg: linear-gradient(135deg, #f59f00 0%, #e67700 100%);
+      --tile-sel-shadow: #9c36b5;
+      --ladder-solved-bg: linear-gradient(135deg, #2b8a3e 0%, #087f5b 100%);
+      --ladder-solved-border: #b2f2bb;
     }
 
     * {
@@ -59,6 +101,7 @@
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
+      transition: background 0.35s ease;
     }
 
     #confettiCanvas {
@@ -137,13 +180,13 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: max(8px, env(safe-area-inset-top)) 14px 4px;
+      padding: max(8px, env(safe-area-inset-top)) 12px 4px;
     }
 
     .level-badge {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
     .badge-num {
@@ -155,16 +198,16 @@
       border-radius: 50%;
       color: #1a1608;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .title-group h1 {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.3px;
       display: flex;
       align-items: center;
       gap: 5px;
@@ -174,29 +217,28 @@
       font-size: 9px;
       background: #eb2f74;
       color: #fff;
-      padding: 2px 6px;
-      border-radius: 8px;
+      padding: 2px 5px;
+      border-radius: 7px;
       font-weight: 800;
-      letter-spacing: 0.6px;
     }
 
     .title-group p {
       font-size: 10px;
-      opacity: 0.8;
+      opacity: 0.85;
       font-weight: 600;
     }
 
     .top-stats {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .score-chip {
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 16px;
-      padding: 4px 10px;
+      padding: 4px 9px;
       font-weight: 800;
       font-size: 12px;
       color: #ffd24d;
@@ -206,8 +248,8 @@
     }
 
     .icon-btn {
-      width: 32px;
-      height: 32px;
+      width: 31px;
+      height: 31px;
       border-radius: 50%;
       background: rgba(4, 30, 52, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -216,7 +258,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .sub-bar {
@@ -306,7 +348,7 @@
     .ladder-cell.solved {
       background: var(--ladder-solved-bg);
       border-color: var(--ladder-solved-border);
-      box-shadow: 0 3px 0 #570fa3, 0 5px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.35), 0 5px 10px rgba(0,0,0,0.3);
       animation: popSolved 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -332,8 +374,8 @@
       height: 30px;
       padding: 0 18px;
       border-radius: 15px;
-      background: rgba(30, 20, 75, 0.75);
-      border: 2px solid rgba(193, 110, 255, 0.45);
+      background: rgba(15, 12, 41, 0.72);
+      border: 2px solid rgba(255, 255, 255, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -368,6 +410,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background 0.35s ease;
     }
 
     .grid-wrapper {
@@ -623,7 +666,7 @@
     }
 
     .modal-card h2 {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 900;
       color: #ffe66d;
       margin-bottom: 3px;
@@ -664,7 +707,7 @@
       background: linear-gradient(135deg, #1fa75f 0%, #157943 100%);
       border: 2px solid #57ea9c;
       border-radius: 16px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 900;
       color: #fff;
       cursor: pointer;
@@ -679,20 +722,6 @@
 <body>
 
   <div class="game-container" id="gameApp">
-
-    <!-- Leaderboard Modal (place inside .game-container) -->
-<div class="modal-overlay" id="leaderboardModal">
-  <div class="modal-card">
-    <h2>🏆 TOP REEFEXPLORERS</h2>
-    <p class="subtitle">Highest Scores & Reefs Cleared</p>
-    <div id="leaderboardList" style="margin-bottom: 16px; text-align: left; background: rgba(2,16,30,0.55); border-radius: 14px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.12);"></div>
-    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-      <input type="text" id="playerNameInput" maxlength="12" placeholder="Your Name" style="flex:1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.35); color: #fff; font-weight: 700; outline: none;">
-      <button id="saveScoreBtn" style="padding: 10px 14px; border-radius: 10px; border: none; background: #f5a623; color: #1a1200; font-weight: 900; cursor: pointer;">SAVE</button>
-    </div>
-    <button class="modal-btn" id="closeLeaderboardBtn">CLOSE</button>
-  </div>
-</div>
     <canvas id="confettiCanvas"></canvas>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -706,16 +735,14 @@
       <div class="level-badge">
         <div class="badge-num" id="levelNum">1</div>
         <div class="title-group">
-          <h1>Kate 4 Mick <span class="tag" id="zoneTag">2x5</span></h1>
-          <p id="dictStatus">100% Complete Word List</p>
+          <h1>QuadraWord <span class="tag" id="zoneTag">2x5</span></h1>
+          <p id="dictStatus">Ocean Tide</p>
         </div>
       </div>
       <div class="top-stats">
-              <!-- Inside <div class="top-stats"> in <header> -->
-
+        <div class="score-chip">✨ <span id="scoreVal">0</span></div>
+        <button class="icon-btn" id="themeBtn" title="Switch Theme">🎨</button>
         <button class="icon-btn" id="leaderboardBtn" title="Leaderboard">🏆</button>
-
-        <div class="score-chip">✨ <span id="scoreVal">0</span> PTS</div>
         <button class="icon-btn" id="soundBtn" title="Toggle Sound">🔊</button>
       </div>
     </header>
@@ -741,6 +768,7 @@
       </div>
     </div>
 
+    <!-- Victory Modal -->
     <div class="modal-overlay" id="victoryModal">
       <div class="modal-card" id="victoryCard">
         <div class="flawless-emblem" id="flawlessEmblem">
@@ -778,67 +806,23 @@
         <button class="modal-btn" id="nextLevelBtn">NEW BOARD ➔</button>
       </div>
     </div>
+
+    <!-- Leaderboard Modal -->
+    <div class="modal-overlay" id="leaderboardModal">
+      <div class="modal-card">
+        <h2>🏆 LEADERBOARD</h2>
+        <p class="subtitle">Top Reef Explorers</p>
+        <div id="leaderboardList" style="margin-bottom: 14px; text-align: left; background: rgba(2,16,30,0.55); border-radius: 14px; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.12);"></div>
+        <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+          <input type="text" id="playerNameInput" maxlength="12" placeholder="Enter Your Name" style="flex:1; padding: 9px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.35); color: #fff; font-weight: 700; font-size: 13px; outline: none;">
+          <button id="saveScoreBtn" style="padding: 9px 12px; border-radius: 10px; border: none; background: #f5a623; color: #1a1200; font-weight: 900; font-size: 12px; cursor: pointer;">SAVE</button>
+        </div>
+        <button class="modal-btn" id="closeLeaderboardBtn">CLOSE</button>
+      </div>
+    </div>
   </div>
 
   <script>
-
-    const LB_STORAGE_KEY = 'quadraword_leaderboard_v1';
-
-function getLeaderboard() {
-  try {
-    const raw = localStorage.getItem(LB_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  // Default starter entries
-  return [
-    { name: 'ReefMaster', score: 3400, level: 5 },
-    { name: 'TideRunner', score: 2150, level: 3 },
-    { name: 'CoralKing', score: 1250, level: 2 }
-  ];
-}
-
-function saveScoreToLeaderboard(name, newScore, levelReached) {
-  const cleanName = (name || 'Explorer').trim().slice(0, 12);
-  const lb = getLeaderboard();
-  lb.push({ name: cleanName, score: newScore, level: levelReached, isMe: true });
-  lb.sort((a, b) => b.score - a.score);
-  const top5 = lb.slice(0, 5);
-  localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(top5));
-  renderLeaderboard();
-}
-
-function renderLeaderboard() {
-  const listEl = document.getElementById('leaderboardList');
-  const lb = getLeaderboard();
-  listEl.innerHTML = lb.map((entry, idx) => {
-    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
-    const highlight = entry.isMe ? 'color: #ffd700;' : 'color: #fff;';
-    return `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 800; ${highlight}">
-        <span>${medal} ${entry.name} <small style="opacity:0.65; font-size:10px;">(Lv.${entry.level})</small></span>
-        <span style="color:#64ffda;">${entry.score.toLocaleString()} PTS</span>
-      </div>
-    `;
-  }).join('');
-}
-
-// Wire up buttons
-document.getElementById('leaderboardBtn').addEventListener('click', () => {
-  renderLeaderboard();
-  document.getElementById('leaderboardModal').classList.add('active');
-});
-
-document.getElementById('closeLeaderboardBtn').addEventListener('click', () => {
-  document.getElementById('leaderboardModal').classList.remove('active');
-});
-
-document.getElementById('saveScoreBtn').addEventListener('click', () => {
-  const nameInput = document.getElementById('playerNameInput');
-  if (score > 0) {
-    saveScoreToLeaderboard(nameInput.value || 'Player', score, boardNumber);
-    nameInput.value = '';
-  }
-});
     function syncMobileViewportHeight() {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${vh}px`);
@@ -849,10 +833,18 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
     }
     syncMobileViewportHeight();
 
+    // Theme Config
+    const THEMES = [
+      { id: 'ocean',  name: 'Ocean Tide',  trail: '#d359ff' },
+      { id: 'sunset', name: 'Sunset Reef', trail: '#ff9966' },
+      { id: 'synth',  name: 'Neon Abyss',  trail: '#f43f5e' },
+      { id: 'forest', name: 'Kelp Forest', trail: '#fcc419' }
+    ];
+    let currentThemeIdx = 0;
+
     const EVERYDAY_WORDS_URL = 'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears.txt';
     const FULL_DICT_URL = 'https://cdn.jsdelivr.net/npm/an-array-of-english-words@2.0.0/index.json';
 
-    // Strict blacklist of abbreviations, acronyms, proper nouns, web junk, and weird 3-letter fragments
     const JUNK_WORD_BLACKLIST = new Set([
       "URL", "PDF", "FAQ", "INC", "LTD", "LLC", "ORG", "COM", "NET", "GOV", "EDU", "MIL", "INT", "WWW", "HTM", "HTML", "PHP", "ASP", "CSS", "XML", "SQL", "API", "SDK", "GUI", "CLI", "CPU", "GPU", "ROM", "USB", "DVD", "VCR", "MP3", "JPG", "GIF", "PNG", "ZIP", "RAR", "EXE", "DLL", "SYS", "INI", "LOG", "TXT", "DOC", "XLS", "PPT",
       "JAN", "FEB", "MAR", "APR", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "MON", "TUE", "WED", "THU", "FRI", "SUN",
@@ -860,7 +852,6 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       "EST", "PST", "CST", "MST", "GMT", "UTC", "PDT", "EDT", "CDT", "MDT", "USD", "EUR", "GBP", "CAD", "AUD", "JPY", "INR",
       "ETC", "VOL", "FIG", "REF", "SEC", "MIN", "MAX", "AVG", "QTY", "TEL", "FAX", "EXT", "DEPT", "UNIV", "ASSN", "CORP", "BROS",
       "LOL", "OMG", "WTF", "BTW", "IMO", "IMHO", "FYI", "ASAP", "RSVP", "AKA", "DIY", "TBA", "TBD", "PICS", "INFO", "TECH", "SPEC", "SPECS", "ADMIN", "MODS", "BLOG", "BLOGS", "WIKI", "PORN", "XXX", "SEX", "GAY", "ASS", "CUM", "TIT", "TITS", "ANAL", "SLUT", "CRAP", "DAMN", "HELL", "PISS", "DICK", "COCK", "PUSSY", "FUCK", "SHIT", "BITCH",
-      // Obscure / non-standard 3-4 letter fragments from web frequency lists
       "THO", "THRU", "YEA", "YEP", "NAH", "UHUH", "HMM", "SHH", "GRR", "BRR", "DUH", "MEH", "YAY", "BOO", "OOH", "AAH", "WOW", "HEY", "HIYA",
       "NON", "PRE", "PRO", "SUB", "MID", "NEO", "GEO", "BIO", "ECO", "SCI", "MED", "VET", "LAB", "REP", "DEM", "SEN", "GOV", "GEN", "COL", "MAJ", "CAPT", "SGT", "CPL", "PVT",
       "REV", "EST", "ALT", "ESC", "DEL", "INS", "CTRL", "TAB", "NUM", "CAPS", "PGUP", "PGDN", "HOME", "END", "OPT", "CMD",
@@ -869,11 +860,9 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       "LCD", "LED", "CRT", "HDTV", "DVR", "VHS", "CAM", "MIC", "AMP", "SUB", "AUX", "RCA", "VGA", "DVI", "HDMI",
       "GPA", "SAT", "ACT", "GRE", "GMAT", "LSAT", "MCAT", "GED", "ESL",
       "IRA", "ROI", "APR", "APY", "IPO", "ETF", "REIT", "FDIC", "IRS", "CPA", "LLC", "LLP",
-      "DNA", "RNA", "HIV", "AIDS", "STD", "STI", "MRI", "ECG", "EKG", "ICU", "ER", "OR", "RN", "LPN", "EMT", "CPR", "FDA", "CDC", "WHO", "NIH",
-      "cia", "fbi", "nsa", "dea", "atf", "tsa", "dhs", "dod", "doj", "dos", "dot", "doe", "epa", "fcc", "ftc", "sec"
+      "DNA", "RNA", "HIV", "AIDS", "STD", "STI", "MRI", "ECG", "EKG", "ICU", "ER", "OR", "RN", "LPN", "EMT", "CPR", "FDA", "CDC", "WHO", "NIH"
     ]);
 
-    // Guaranteed familiar everyday 3-letter words so 3-letter targets are NEVER obscure
     const FAMILIAR_3_LETTER_WORDS = new Set([
       "ACT", "ADD", "AGE", "AGO", "AID", "AIM", "AIR", "ALL", "AND", "ANT", "ANY", "APE", "ARC", "ARE", "ARK", "ARM", "ART", "ASH", "ASK", "ATE",
       "BAD", "BAG", "BAN", "BAR", "BAT", "BAY", "BED", "BEE", "BEG", "BET", "BID", "BIG", "BIN", "BIT", "BOW", "BOX", "BOY", "BUD", "BUG", "BUN", "BUS", "BUT", "BUY",
@@ -1056,6 +1045,92 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       bubbleLayer.appendChild(b);
     }
 
+    // Theme Switcher Logic
+    function applyTheme(index) {
+      currentThemeIdx = index % THEMES.length;
+      const theme = THEMES[currentThemeIdx];
+      if (theme.id === 'ocean') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme.id);
+      }
+      dictStatus.textContent = `${theme.name} • ${currentTargets.length || 5} Words`;
+      localStorage.setItem('quadraword_theme', currentThemeIdx);
+      drawTrail();
+    }
+
+    const savedTheme = localStorage.getItem('quadraword_theme');
+    if (savedTheme !== null) {
+      currentThemeIdx = parseInt(savedTheme, 10) || 0;
+      const t = THEMES[currentThemeIdx];
+      if (t && t.id !== 'ocean') {
+        document.documentElement.setAttribute('data-theme', t.id);
+      }
+    }
+
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      sound.tap();
+      applyTheme(currentThemeIdx + 1);
+    });
+
+    // Leaderboard Logic
+    const LB_STORAGE_KEY = 'quadraword_leaderboard_v1';
+
+    function getLeaderboard() {
+      try {
+        const raw = localStorage.getItem(LB_STORAGE_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return [
+        { name: 'ReefMaster', score: 3400, level: 5 },
+        { name: 'TideRunner', score: 2150, level: 3 },
+        { name: 'CoralKing', score: 1250, level: 2 }
+      ];
+    }
+
+    function saveScoreToLeaderboard(name, newScore, levelReached) {
+      const cleanName = (name || 'Explorer').trim().slice(0, 12);
+      const lb = getLeaderboard();
+      lb.push({ name: cleanName, score: newScore, level: levelReached, isMe: true });
+      lb.sort((a, b) => b.score - a.score);
+      const top5 = lb.slice(0, 5);
+      localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(top5));
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const listEl = document.getElementById('leaderboardList');
+      const lb = getLeaderboard();
+      listEl.innerHTML = lb.map((entry, idx) => {
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+        const highlight = entry.isMe ? 'color: #ffd700;' : 'color: #fff;';
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 800; ${highlight}">
+            <span>${medal} ${entry.name} <small style="opacity:0.65; font-size:10px;">(Lv.${entry.level})</small></span>
+            <span style="color:#64ffda;">${entry.score.toLocaleString()} PTS</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('leaderboardBtn').addEventListener('click', () => {
+      sound.tap();
+      renderLeaderboard();
+      document.getElementById('leaderboardModal').classList.add('active');
+    });
+
+    document.getElementById('closeLeaderboardBtn').addEventListener('click', () => {
+      sound.tap();
+      document.getElementById('leaderboardModal').classList.remove('active');
+    });
+
+    document.getElementById('saveScoreBtn').addEventListener('click', () => {
+      const nameInput = document.getElementById('playerNameInput');
+      sound.success();
+      saveScoreToLeaderboard(nameInput.value || 'Explorer', score, boardNumber);
+      nameInput.value = '';
+    });
+
     function launchFlawlessCelebrationGraphic() {
       confettiCanvas.width = confettiCanvas.parentElement.clientWidth;
       confettiCanvas.height = confettiCanvas.parentElement.clientHeight;
@@ -1133,13 +1208,11 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
     }
 
-    // Strict filter so ONLY easy, household English words are eligible for the top ladder
     function isEasyEverydayWord(word) {
       if (JUNK_WORD_BLACKLIST.has(word)) return false;
       if (word.length === 3) {
         return FAMILIAR_3_LETTER_WORDS.has(word);
       }
-      // For 4-6 letter words: must have a vowel, no triple letters, no harsh 3-consonant endings
       if (!/[AEIOU]/.test(word)) return false;
       if (/(.)\1\1/.test(word)) return false;
       if (/[BCDFGHJKLMNPQRSTVWXZ]{4,}/.test(word)) return false;
@@ -1165,7 +1238,6 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
         });
 
         const seen = new Set();
-        // Add all guaranteed familiar 3-letter words first
         FAMILIAR_3_LETTER_WORDS.forEach(w => {
           if (fullDictionarySet.has(w)) {
             easyWordsList.push(w);
@@ -1173,7 +1245,6 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
           }
         });
 
-        // Take only the top 2,200 most common 4-6 letter everyday words
         const lines = commonText.split(/\r?\n/);
         for (let i = 0; i < Math.min(lines.length, 2200); i++) {
           const upper = lines[i].trim().toUpperCase();
@@ -1193,11 +1264,6 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       }
     }
 
-    // Complete-Inclusion Board Generator:
-    // Finds a grid where:
-    // 1. Every single tile on the grid is used.
-    // 2. The TOTAL number of everyday words playable on the grid is between 4 and 6.
-    // 3. ALL of those words are placed into the top target ladder (0 missing everyday words!).
     function generateCompleteInclusionBoard() {
       const vowels = ['A', 'E', 'I', 'O', 'U'];
       const commonConsonants = ['R', 'S', 'T', 'L', 'N', 'C', 'D', 'M', 'P', 'B', 'G', 'H', 'F', 'W', 'K'];
@@ -1254,15 +1320,12 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
           }
         }
 
-        // Check if 100% of tiles are used by the playable easy words
         if (coveredIndices.size === totalTiles && allPlayableEasyWords.length >= 4) {
-          // Ideal board: total playable everyday words is 4, 5, or 6 -> include ALL of them!
           if (allPlayableEasyWords.length <= 6) {
             allPlayableEasyWords.sort((a, b) => a.length - b.length || a.localeCompare(b));
             return { rows, cols, grid, targets: allPlayableEasyWords };
           }
 
-          // Track closest board if it had 7 words
           const diff = allPlayableEasyWords.length - 6;
           if (diff < smallestDiff) {
             smallestDiff = diff;
@@ -1322,7 +1385,7 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       currentTargets = generated.targets;
 
       zoneTag.textContent = `${currentRows}×${currentCols}`;
-      dictStatus.textContent = `All ${currentTargets.length} Everyday Words Included`;
+      dictStatus.textContent = `${THEMES[currentThemeIdx].name} • ${currentTargets.length} Words`;
 
       solvedTargets.clear();
       bonusWordsFound.clear();
@@ -1604,7 +1667,7 @@ document.getElementById('saveScoreBtn').addEventListener('click', () => {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', '#d359ff');
+      path.setAttribute('stroke', THEMES[currentThemeIdx].trail);
       path.setAttribute('stroke-width', '7');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
