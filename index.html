@@ -679,6 +679,20 @@
 <body>
 
   <div class="game-container" id="gameApp">
+
+    <!-- Leaderboard Modal (place inside .game-container) -->
+<div class="modal-overlay" id="leaderboardModal">
+  <div class="modal-card">
+    <h2>🏆 TOP REEFEXPLORERS</h2>
+    <p class="subtitle">Highest Scores & Reefs Cleared</p>
+    <div id="leaderboardList" style="margin-bottom: 16px; text-align: left; background: rgba(2,16,30,0.55); border-radius: 14px; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.12);"></div>
+    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <input type="text" id="playerNameInput" maxlength="12" placeholder="Your Name" style="flex:1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.35); color: #fff; font-weight: 700; outline: none;">
+      <button id="saveScoreBtn" style="padding: 10px 14px; border-radius: 10px; border: none; background: #f5a623; color: #1a1200; font-weight: 900; cursor: pointer;">SAVE</button>
+    </div>
+    <button class="modal-btn" id="closeLeaderboardBtn">CLOSE</button>
+  </div>
+</div>
     <canvas id="confettiCanvas"></canvas>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -697,6 +711,10 @@
         </div>
       </div>
       <div class="top-stats">
+              <!-- Inside <div class="top-stats"> in <header> -->
+
+        <button class="icon-btn" id="leaderboardBtn" title="Leaderboard">🏆</button>
+
         <div class="score-chip">✨ <span id="scoreVal">0</span> PTS</div>
         <button class="icon-btn" id="soundBtn" title="Toggle Sound">🔊</button>
       </div>
@@ -763,6 +781,64 @@
   </div>
 
   <script>
+
+    const LB_STORAGE_KEY = 'quadraword_leaderboard_v1';
+
+function getLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LB_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  // Default starter entries
+  return [
+    { name: 'ReefMaster', score: 3400, level: 5 },
+    { name: 'TideRunner', score: 2150, level: 3 },
+    { name: 'CoralKing', score: 1250, level: 2 }
+  ];
+}
+
+function saveScoreToLeaderboard(name, newScore, levelReached) {
+  const cleanName = (name || 'Explorer').trim().slice(0, 12);
+  const lb = getLeaderboard();
+  lb.push({ name: cleanName, score: newScore, level: levelReached, isMe: true });
+  lb.sort((a, b) => b.score - a.score);
+  const top5 = lb.slice(0, 5);
+  localStorage.setItem(LB_STORAGE_KEY, JSON.stringify(top5));
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const listEl = document.getElementById('leaderboardList');
+  const lb = getLeaderboard();
+  listEl.innerHTML = lb.map((entry, idx) => {
+    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}.`;
+    const highlight = entry.isMe ? 'color: #ffd700;' : 'color: #fff;';
+    return `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px; font-weight: 800; ${highlight}">
+        <span>${medal} ${entry.name} <small style="opacity:0.65; font-size:10px;">(Lv.${entry.level})</small></span>
+        <span style="color:#64ffda;">${entry.score.toLocaleString()} PTS</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Wire up buttons
+document.getElementById('leaderboardBtn').addEventListener('click', () => {
+  renderLeaderboard();
+  document.getElementById('leaderboardModal').classList.add('active');
+});
+
+document.getElementById('closeLeaderboardBtn').addEventListener('click', () => {
+  document.getElementById('leaderboardModal').classList.remove('active');
+});
+
+document.getElementById('saveScoreBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('playerNameInput');
+  if (score > 0) {
+    saveScoreToLeaderboard(nameInput.value || 'Player', score, boardNumber);
+    nameInput.value = '';
+  }
+});
     function syncMobileViewportHeight() {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       document.documentElement.style.setProperty('--app-height', `${vh}px`);
