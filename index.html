@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>KateWord - Ocean Tide</title>
+  <title>QuadraWord - Ocean Tide</title>
   <style>
     :root {
       --app-height: 100dvh;
@@ -683,7 +683,7 @@
 
     <div class="loading-overlay" id="loadingOverlay">
       <div class="spinner"></div>
-      <div class="loading-text" id="loadingText">Loading Mobile Vocabulary...</div>
+      <div class="loading-text" id="loadingText">Loading Everyday Words...</div>
     </div>
 
     <div class="bubble-layer" id="bubbleLayer"></div>
@@ -692,8 +692,8 @@
       <div class="level-badge">
         <div class="badge-num" id="levelNum">1</div>
         <div class="title-group">
-          <h1>KateWord <span class="tag" id="zoneTag">2x5</span></h1>
-          <p id="dictStatus">Tight-Fit Board</p>
+          <h1>QuadraWord <span class="tag" id="zoneTag">2x5</span></h1>
+          <p id="dictStatus">100% Complete Word List</p>
         </div>
       </div>
       <div class="top-stats">
@@ -776,13 +776,50 @@
     const EVERYDAY_WORDS_URL = 'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears.txt';
     const FULL_DICT_URL = 'https://cdn.jsdelivr.net/npm/an-array-of-english-words@2.0.0/index.json';
 
-    const ACRONYM_BLACKLIST = new Set([
-      "URL", "PDF", "FAQ", "INC", "LTD", "LLC", "ORG", "COM", "NET", "GOV", "EDU", "MIL", "INT", "WWW", "HTM", "HTML", "PHP", "ASP", "CSS", "XML", "SQL", "API", "SDK", "GUI", "CLI", "CPU", "GPU", "RAM", "ROM", "USB", "DVD", "VCR", "CD", "MP3", "JPG", "GIF", "PNG", "ZIP", "TAR", "RAR", "EXE", "DLL", "SYS", "INI", "LOG", "TXT", "DOC", "XLS", "PPT",
-      "JAN", "FEB", "MAR", "APR", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN",
-      "USA", "UK", "USC", "UCLA", "MIT", "NYU", "NYC", "LAS", "SAN", "LOS", "AVE", "STR", "BLVD", "RD", "ST", "DR", "MR", "MRS", "MS", "JR", "SR", "PHD", "MD", "CEO", "CFO", "CTO", "VP", "HR", "PR", "ID", "TV", "PC", "MAC", "IBM", "HP", "AMD", "AOL", "MSN", "CNN", "BBC", "NBC", "ABC", "CBS", "FOX", "NFL", "NBA", "MLB", "NHL", "FIFA", "UEFA",
+    // Strict blacklist of abbreviations, acronyms, proper nouns, web junk, and weird 3-letter fragments
+    const JUNK_WORD_BLACKLIST = new Set([
+      "URL", "PDF", "FAQ", "INC", "LTD", "LLC", "ORG", "COM", "NET", "GOV", "EDU", "MIL", "INT", "WWW", "HTM", "HTML", "PHP", "ASP", "CSS", "XML", "SQL", "API", "SDK", "GUI", "CLI", "CPU", "GPU", "ROM", "USB", "DVD", "VCR", "MP3", "JPG", "GIF", "PNG", "ZIP", "RAR", "EXE", "DLL", "SYS", "INI", "LOG", "TXT", "DOC", "XLS", "PPT",
+      "JAN", "FEB", "MAR", "APR", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", "MON", "TUE", "WED", "THU", "FRI", "SUN",
+      "USA", "USC", "UCLA", "MIT", "NYU", "NYC", "LAS", "SAN", "LOS", "AVE", "STR", "BLVD", "MRS", "PHD", "CEO", "CFO", "CTO", "MAC", "IBM", "AMD", "AOL", "MSN", "CNN", "BBC", "NBC", "ABC", "CBS", "NFL", "NBA", "MLB", "NHL", "FIFA", "UEFA",
       "EST", "PST", "CST", "MST", "GMT", "UTC", "PDT", "EDT", "CDT", "MDT", "USD", "EUR", "GBP", "CAD", "AUD", "JPY", "INR",
-      "ETC", "IE", "EG", "VS", "VOL", "NO", "FIG", "REF", "SEC", "MIN", "MAX", "AVG", "QTY", "TEL", "FAX", "EXT", "DEPT", "UNIV", "ASSN", "CORP", "CO", "BROS",
-      "LOL", "OMG", "WTF", "BTW", "IMO", "IMHO", "FYI", "ASAP", "RSVP", "AKA", "DIY", "TBA", "TBD", "PICS", "INFO", "TECH", "SPEC", "SPECS", "ADMIN", "MODS", "BLOG", "BLOGS", "WIKI", "PORN", "XXX", "SEX", "GAY", "ASS", "CUM", "TIT", "TITS", "ANAL", "SLUT", "CRAP", "DAMN", "HELL", "PISS", "DICK", "COCK", "PUSSY", "FUCK", "SHIT", "BITCH"
+      "ETC", "VOL", "FIG", "REF", "SEC", "MIN", "MAX", "AVG", "QTY", "TEL", "FAX", "EXT", "DEPT", "UNIV", "ASSN", "CORP", "BROS",
+      "LOL", "OMG", "WTF", "BTW", "IMO", "IMHO", "FYI", "ASAP", "RSVP", "AKA", "DIY", "TBA", "TBD", "PICS", "INFO", "TECH", "SPEC", "SPECS", "ADMIN", "MODS", "BLOG", "BLOGS", "WIKI", "PORN", "XXX", "SEX", "GAY", "ASS", "CUM", "TIT", "TITS", "ANAL", "SLUT", "CRAP", "DAMN", "HELL", "PISS", "DICK", "COCK", "PUSSY", "FUCK", "SHIT", "BITCH",
+      // Obscure / non-standard 3-4 letter fragments from web frequency lists
+      "THO", "THRU", "YEA", "YEP", "NAH", "UHUH", "HMM", "SHH", "GRR", "BRR", "DUH", "MEH", "YAY", "BOO", "OOH", "AAH", "WOW", "HEY", "HIYA",
+      "NON", "PRE", "PRO", "SUB", "MID", "NEO", "GEO", "BIO", "ECO", "SCI", "MED", "VET", "LAB", "REP", "DEM", "SEN", "GOV", "GEN", "COL", "MAJ", "CAPT", "SGT", "CPL", "PVT",
+      "REV", "EST", "ALT", "ESC", "DEL", "INS", "CTRL", "TAB", "NUM", "CAPS", "PGUP", "PGDN", "HOME", "END", "OPT", "CMD",
+      "DEV", "SRC", "BIN", "LIB", "VAR", "USR", "TMP", "OPT", "ETC", "PROC", "MNT", "SRV", "BOOT", "ROOT", "SUDO", "GREP", "AWK", "SED",
+      "ISP", "LAN", "WAN", "VPN", "DNS", "TCP", "UDP", "FTP", "SSH", "SSL", "TLS", "HTTP", "SMTP", "POP", "IMAP", "DHCP", "NAT", "MAC",
+      "LCD", "LED", "CRT", "HDTV", "DVR", "VHS", "CAM", "MIC", "AMP", "SUB", "AUX", "RCA", "VGA", "DVI", "HDMI",
+      "GPA", "SAT", "ACT", "GRE", "GMAT", "LSAT", "MCAT", "GED", "ESL",
+      "IRA", "ROI", "APR", "APY", "IPO", "ETF", "REIT", "FDIC", "IRS", "CPA", "LLC", "LLP",
+      "DNA", "RNA", "HIV", "AIDS", "STD", "STI", "MRI", "ECG", "EKG", "ICU", "ER", "OR", "RN", "LPN", "EMT", "CPR", "FDA", "CDC", "WHO", "NIH",
+      "cia", "fbi", "nsa", "dea", "atf", "tsa", "dhs", "dod", "doj", "dos", "dot", "doe", "epa", "fcc", "ftc", "sec"
+    ]);
+
+    // Guaranteed familiar everyday 3-letter words so 3-letter targets are NEVER obscure
+    const FAMILIAR_3_LETTER_WORDS = new Set([
+      "ACT", "ADD", "AGE", "AGO", "AID", "AIM", "AIR", "ALL", "AND", "ANT", "ANY", "APE", "ARC", "ARE", "ARK", "ARM", "ART", "ASH", "ASK", "ATE",
+      "BAD", "BAG", "BAN", "BAR", "BAT", "BAY", "BED", "BEE", "BEG", "BET", "BID", "BIG", "BIN", "BIT", "BOW", "BOX", "BOY", "BUD", "BUG", "BUN", "BUS", "BUT", "BUY",
+      "CAB", "CAN", "CAP", "CAR", "CAT", "COB", "COD", "COG", "COP", "COT", "COW", "CRY", "CUB", "CUP", "CUT",
+      "DAD", "DAM", "DAY", "DEN", "DEW", "DID", "DIE", "DIG", "DIM", "DIP", "DOG", "DOT", "DRY", "DUE", "DUG", "DYE",
+      "EAR", "EAT", "EGG", "ELK", "ELM", "END", "ERA", "EVE", "EYE",
+      "FAN", "FAR", "FAT", "FED", "FEE", "FEW", "FIG", "FIN", "FIR", "FIT", "FIX", "FLU", "FLY", "FOE", "FOG", "FOR", "FOX", "FRY", "FUN", "FUR",
+      "GAP", "GAS", "GEL", "GEM", "GET", "GOD", "GOT", "GUM", "GUN", "GUT", "GUY", "GYM",
+      "HAD", "HAM", "HAS", "HAT", "HAY", "HEN", "HER", "HID", "HIM", "HIP", "HIS", "HIT", "HOG", "HOP", "HOT", "HOW", "HUB", "HUG", "HUM", "HUT",
+      "ICE", "ICY", "ILL", "INK", "INN", "ION", "ITS", "IVY",
+      "JAB", "JAM", "JAR", "JAW", "JAY", "JET", "JOB", "JOG", "JOY", "JUG",
+      "KEG", "KEY", "KID", "KIN", "KIT",
+      "LAB", "LAD", "LAG", "LAP", "LAW", "LAY", "LED", "LEG", "LET", "LID", "LIE", "LIP", "LIT", "LOG", "LOT", "LOW",
+      "MAD", "MAN", "MAP", "MAT", "MAY", "MEN", "MET", "MIX", "MOB", "MOM", "MOP", "MUD", "MUG",
+      "NAP", "NET", "NEW", "NOD", "NOR", "NOT", "NOW", "NUN", "NUT",
+      "OAK", "OAR", "OAT", "ODD", "OFF", "OIL", "OLD", "ONE", "OPT", "ORB", "ORE", "OUR", "OUT", "OWE", "OWL", "OWN",
+      "PAD", "PAL", "PAN", "PAT", "PAW", "PAY", "PEA", "PEG", "PEN", "PET", "PIE", "PIG", "PIN", "PIT", "POD", "POP", "POT", "PRY", "PUB", "PUN", "PUP", "PUT",
+      "RAG", "RAM", "RAN", "RAP", "RAT", "RAW", "RAY", "RED", "RIB", "RID", "RIG", "RIM", "RIP", "ROB", "ROD", "ROT", "ROW", "RUB", "RUG", "RUM", "RUN", "RUT",
+      "SAD", "SAG", "SAP", "SAT", "SAW", "SAY", "SEA", "SEE", "SET", "SEW", "SHE", "SHY", "SIN", "SIP", "SIR", "SIT", "SIX", "SKI", "SKY", "SLY", "SOB", "SOD", "SON", "SOY", "SPA", "SPY", "SUB", "SUM", "SUN",
+      "TAB", "TAG", "TAN", "TAP", "TAR", "TAX", "TEA", "TEN", "THE", "TIE", "TIN", "TIP", "TOE", "TON", "TOO", "TOP", "TOT", "TOW", "TOY", "TRY", "TUB", "TUG", "TWO",
+      "URN", "USE", "VAN", "VAT", "VET", "VOW", "WAD", "WAG", "WAR", "WAS", "WAX", "WAY", "WEB", "WED", "WET", "WHO", "WHY", "WIG", "WIN", "WIT", "WOE", "WOK", "WON", "WOO",
+      "YAM", "YAP", "YAW", "YES", "YET", "YEW", "YOU", "ZAP", "ZEN", "ZIP", "ZIT", "ZOO"
     ]);
 
     class SoundFX {
@@ -886,7 +923,7 @@
     const sound = new SoundFX();
 
     let fullDictionarySet = new Set();
-    let commonWordsList = [];
+    let easyWordsList = [];
 
     let boardNumber = 1;
     let score = 0;
@@ -1020,8 +1057,13 @@
       confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
     }
 
-    function isCleanEverydayWord(word) {
-      if (ACRONYM_BLACKLIST.has(word)) return false;
+    // Strict filter so ONLY easy, household English words are eligible for the top ladder
+    function isEasyEverydayWord(word) {
+      if (JUNK_WORD_BLACKLIST.has(word)) return false;
+      if (word.length === 3) {
+        return FAMILIAR_3_LETTER_WORDS.has(word);
+      }
+      // For 4-6 letter words: must have a vowel, no triple letters, no harsh 3-consonant endings
       if (!/[AEIOU]/.test(word)) return false;
       if (/(.)\1\1/.test(word)) return false;
       if (/[BCDFGHJKLMNPQRSTVWXZ]{4,}/.test(word)) return false;
@@ -1030,7 +1072,7 @@
 
     async function loadDictionaries() {
       try {
-        loadingText.textContent = 'Loading Vocabulary...';
+        loadingText.textContent = 'Loading Everyday Vocabulary...';
         const [commonRes, fullRes] = await Promise.all([
           fetch(EVERYDAY_WORDS_URL),
           fetch(FULL_DICT_URL)
@@ -1046,12 +1088,23 @@
           }
         });
 
+        const seen = new Set();
+        // Add all guaranteed familiar 3-letter words first
+        FAMILIAR_3_LETTER_WORDS.forEach(w => {
+          if (fullDictionarySet.has(w)) {
+            easyWordsList.push(w);
+            seen.add(w);
+          }
+        });
+
+        // Take only the top 2,200 most common 4-6 letter everyday words
         const lines = commonText.split(/\r?\n/);
-        for (let i = 0; i < Math.min(lines.length, 3800); i++) {
+        for (let i = 0; i < Math.min(lines.length, 2200); i++) {
           const upper = lines[i].trim().toUpperCase();
-          if (upper.length >= 3 && upper.length <= 6 && /^[A-Z]+$/.test(upper)) {
-            if (fullDictionarySet.has(upper) && isCleanEverydayWord(upper)) {
-              commonWordsList.push(upper);
+          if (!seen.has(upper) && upper.length >= 4 && upper.length <= 6 && /^[A-Z]+$/.test(upper)) {
+            if (fullDictionarySet.has(upper) && isEasyEverydayWord(upper)) {
+              easyWordsList.push(upper);
+              seen.add(upper);
             }
           }
         }
@@ -1064,28 +1117,26 @@
       }
     }
 
-    // Tight-Fit Board Generator:
-    // Searches for a grid where ALL spawned tiles are covered by the target words
-    // AND minimizes leftover "non-target" words so the player rarely stumbles into non-target words!
-    function generateRandomizedFullBoard() {
+    // Complete-Inclusion Board Generator:
+    // Finds a grid where:
+    // 1. Every single tile on the grid is used.
+    // 2. The TOTAL number of everyday words playable on the grid is between 4 and 6.
+    // 3. ALL of those words are placed into the top target ladder (0 missing everyday words!).
+    function generateCompleteInclusionBoard() {
       const vowels = ['A', 'E', 'I', 'O', 'U'];
       const commonConsonants = ['R', 'S', 'T', 'L', 'N', 'C', 'D', 'M', 'P', 'B', 'G', 'H', 'F', 'W', 'K'];
 
       const rowsOptions = [2, 3];
       const colsOptions = [3, 4, 5];
 
-      const rows = rowsOptions[Math.floor(Math.random() * rowsOptions.length)];
-      const cols = colsOptions[Math.floor(Math.random() * colsOptions.length)];
-      const totalTiles = rows * cols;
-      const minTargetWords = totalTiles <= 8 ? 3 : 4;
-      const maxTargetWords = 6; // Max rows that comfortably fit in the top ladder on mobile
+      let bestFallback = null;
+      let smallestDiff = Infinity;
 
-      let bestBoard = null;
-      let lowestExtraWords = Infinity;
+      for (let attempt = 0; attempt < 450; attempt++) {
+        const rows = rowsOptions[Math.floor(Math.random() * rowsOptions.length)];
+        const cols = colsOptions[Math.floor(Math.random() * colsOptions.length)];
+        const totalTiles = rows * cols;
 
-      // Sample candidate boards and keep the one with the FEWEST extra non-target words
-      for (let attempt = 0; attempt < 320; attempt++) {
-        // Use slightly fewer vowels (2 to 3) so random unintended 3-letter words don't form everywhere
         const numVowels = totalTiles <= 8 ? 2 : 3;
         const numConsonants = totalTiles - numVowels;
 
@@ -1107,9 +1158,10 @@
         }
 
         const boardChars = new Set(boardLetters);
-        const candidates = [];
+        const allPlayableEasyWords = [];
+        const coveredIndices = new Set();
 
-        for (const word of commonWordsList) {
+        for (const word of easyWordsList) {
           let possible = true;
           for (let i = 0; i < word.length; i++) {
             if (!boardChars.has(word[i])) {
@@ -1120,65 +1172,36 @@
           if (possible) {
             const path = findWordPath(word, tempTiles);
             if (path !== null) {
-              candidates.push({ word, path });
+              allPlayableEasyWords.push(word);
+              path.forEach(pIdx => coveredIndices.add(pIdx));
             }
           }
         }
 
-        if (candidates.length < minTargetWords) continue;
-
-        // Greedily pick words to cover all 100% of tiles on the board
-        const shuffledCandidates = [...candidates].sort(() => Math.random() - 0.5);
-        const selectedWords = [];
-        const coveredIndices = new Set();
-
-        while (selectedWords.length < maxTargetWords && selectedWords.length < candidates.length) {
-          // If all tiles are already covered and we have enough words, we only add remaining
-          // common words up to maxTargetWords so they become targets instead of annoying bonus words!
-          let bestCandidate = null;
-          let bestScore = -1;
-
-          for (const cand of shuffledCandidates) {
-            if (selectedWords.includes(cand.word)) continue;
-            let newCount = 0;
-            for (const tileIdx of cand.path) {
-              if (!coveredIndices.has(tileIdx)) newCount++;
-            }
-            const lengthBonus = (cand.word.length >= 4) ? 0.4 : 0;
-            const totalScore = newCount + lengthBonus;
-
-            if (totalScore > bestScore) {
-              bestScore = totalScore;
-              bestCandidate = cand;
-            }
+        // Check if 100% of tiles are used by the playable easy words
+        if (coveredIndices.size === totalTiles && allPlayableEasyWords.length >= 4) {
+          // Ideal board: total playable everyday words is 4, 5, or 6 -> include ALL of them!
+          if (allPlayableEasyWords.length <= 6) {
+            allPlayableEasyWords.sort((a, b) => a.length - b.length || a.localeCompare(b));
+            return { rows, cols, grid, targets: allPlayableEasyWords };
           }
 
-          if (bestCandidate) {
-            selectedWords.push(bestCandidate.word);
-            bestCandidate.path.forEach(idx => coveredIndices.add(idx));
-          } else {
-            break;
-          }
-        }
-
-        // Must cover 100% of tiles on the grid
-        if (coveredIndices.size === totalTiles && selectedWords.length >= minTargetWords) {
-          const extraCommonWords = candidates.length - selectedWords.length;
-
-          if (extraCommonWords < lowestExtraWords) {
-            lowestExtraWords = extraCommonWords;
-            const sorted = [...selectedWords].sort((a, b) => a.length - b.length || a.localeCompare(b));
-            bestBoard = { rows, cols, grid, targets: sorted, extraCommonWords };
-
-            // Ideal tight board found: 0 extra common words left outside the top ladder!
-            if (extraCommonWords === 0) {
-              return bestBoard;
-            }
+          // Track closest board if it had 7 words
+          const diff = allPlayableEasyWords.length - 6;
+          if (diff < smallestDiff) {
+            smallestDiff = diff;
+            allPlayableEasyWords.sort((a, b) => a.length - b.length || a.localeCompare(b));
+            bestFallback = {
+              rows,
+              cols,
+              grid,
+              targets: allPlayableEasyWords.slice(0, 6)
+            };
           }
         }
       }
 
-      return bestBoard;
+      return bestFallback;
     }
 
     function getWordCountForChar(char) {
@@ -1212,10 +1235,9 @@
       stopConfetti();
       syncMobileViewportHeight();
 
-      let generated = generateRandomizedFullBoard();
-      // Fallback retry if a rare 3x5 combination needed another pass
+      let generated = generateCompleteInclusionBoard();
       while (!generated) {
-        generated = generateRandomizedFullBoard();
+        generated = generateCompleteInclusionBoard();
       }
 
       currentRows = generated.rows;
@@ -1224,7 +1246,7 @@
       currentTargets = generated.targets;
 
       zoneTag.textContent = `${currentRows}×${currentCols}`;
-      dictStatus.textContent = `${currentRows * currentCols} Letters • Tight-Fit Pool`;
+      dictStatus.textContent = `All ${currentTargets.length} Everyday Words Included`;
 
       solvedTargets.clear();
       bonusWordsFound.clear();
