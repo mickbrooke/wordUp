@@ -39,22 +39,25 @@
 
     /* Theme 3: Neon Abyss (Dark Synth) */
     [data-theme="synth"] {
-      --bg-gradient: linear-gradient(180deg, #141e30 0%, #0f0c29 50%, #05050a 100%);
-      --card-bg: rgba(15, 12, 41, 0.92);
-      --tile-bg: #1e293b;
-      --tile-border: #38bdf8;
+      --bg-gradient: linear-gradient(180deg, #090d16 0%, #12092b 55%, #240b36 100%);
+      --card-bg: rgba(15, 10, 36, 0.92);
+      --card-border: rgba(0, 243, 255, 0.35);
+      --tile-bg: #161e31;
+      --tile-border: #00f3ff;
       --tile-shadow: #0284c7;
-      --tile-text: #f8fafc;
-      --tile-sel-bg: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
-      --tile-sel-shadow: #6b21a8;
-      --ladder-solved-bg: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-      --ladder-solved-border: #a5f3fc;
+      --tile-text: #e0f2fe;
+      --tile-sel-bg: linear-gradient(135deg, #ff007f 0%, #7928ca 100%);
+      --tile-sel-shadow: #4c1d95;
+      --ladder-bg: rgba(0, 243, 255, 0.08);
+      --ladder-border: rgba(0, 243, 255, 0.35);
+      --ladder-solved-bg: linear-gradient(135deg, #00f3ff 0%, #3b82f6 100%);
+      --ladder-solved-border: #cffafe;
     }
 
     /* Theme 4: Kelp Forest */
     [data-theme="forest"] {
-      --bg-gradient: linear-gradient(180deg, #136a8a 0%, #0f4c3a 50%, #06231d 100%);
-      --card-bg: rgba(6, 35, 29, 0.88);
+      --bg-gradient: linear-gradient(180deg, #136a8a 0%, #0f4c3a 50%, #051f18 100%);
+      --card-bg: rgba(5, 31, 24, 0.88);
       --tile-bg: #f4fce3;
       --tile-border: #d8f5a2;
       --tile-shadow: #5c940d;
@@ -101,7 +104,33 @@
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
-      transition: background 0.35s ease;
+      transition: background 0.45s ease;
+    }
+
+    .theme-toast {
+      position: absolute;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(0, 0, 0, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(6px);
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: #fff;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .theme-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     #confettiCanvas {
@@ -150,7 +179,8 @@
       color: #ffe893;
     }
 
-    .bubble-layer {
+    /* Ambient Theme Artifact Layer */
+    .artifact-layer {
       position: absolute;
       inset: 0;
       pointer-events: none;
@@ -158,19 +188,158 @@
       z-index: 1;
     }
 
-    .bubble {
+    .artifact {
       position: absolute;
-      bottom: -40px;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.05));
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 50%;
-      animation: rise linear infinite;
+      pointer-events: none;
+      will-change: transform, opacity;
     }
 
-    @keyframes rise {
-      0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.2; }
-      50% { transform: translateY(-400px) translateX(14px) scale(1.05); opacity: 0.5; }
-      100% { transform: translateY(-850px) translateX(-10px) scale(1.2); opacity: 0; }
+    /* 1. Ocean Tide Artifacts */
+    .ocean-bubble {
+      bottom: -40px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: riseWave linear infinite;
+    }
+
+    .ocean-jelly {
+      bottom: -60px;
+      opacity: 0.35;
+      animation: jellyPulse linear infinite;
+    }
+
+    .ocean-fish {
+      left: -60px;
+      opacity: 0.25;
+      animation: swimAcross linear infinite;
+    }
+
+    @keyframes riseWave {
+      0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.15; }
+      50% { transform: translateY(-420px) translateX(16px) scale(1.05); opacity: 0.55; }
+      100% { transform: translateY(-880px) translateX(-12px) scale(1.2); opacity: 0; }
+    }
+
+    @keyframes jellyPulse {
+      0% { transform: translateY(0) translateX(0) scale(0.9); opacity: 0; }
+      15% { opacity: 0.4; }
+      50% { transform: translateY(-420px) translateX(-20px) scale(1.08); opacity: 0.4; }
+      85% { opacity: 0.3; }
+      100% { transform: translateY(-880px) translateX(15px) scale(0.9); opacity: 0; }
+    }
+
+    @keyframes swimAcross {
+      0% { transform: translateX(0) translateY(0); opacity: 0; }
+      10% { opacity: 0.28; }
+      50% { transform: translateX(240px) translateY(-14px); opacity: 0.28; }
+      90% { opacity: 0.28; }
+      100% { transform: translateX(520px) translateY(8px); opacity: 0; }
+    }
+
+    /* 2. Sunset Reef Artifacts */
+    .sunset-sun {
+      top: 14%;
+      left: 50%;
+      width: 170px;
+      height: 170px;
+      margin-left: -85px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(255, 230, 109, 0.32) 0%, rgba(255, 94, 98, 0.08) 100%);
+      box-shadow: 0 0 50px rgba(255, 180, 80, 0.25);
+      mask-image: repeating-linear-gradient(180deg, #000 0px, #000 10px, transparent 10px, transparent 14px);
+      -webkit-mask-image: repeating-linear-gradient(180deg, #000 0px, #000 10px, transparent 10px, transparent 14px);
+    }
+
+    .sunset-petal {
+      top: -40px;
+      opacity: 0.55;
+      animation: petalDrift linear infinite;
+    }
+
+    .sunset-bird {
+      left: -50px;
+      opacity: 0.35;
+      animation: birdGlide linear infinite;
+    }
+
+    @keyframes petalDrift {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      15% { opacity: 0.65; }
+      50% { transform: translateY(400px) translateX(35px) rotate(180deg); opacity: 0.55; }
+      100% { transform: translateY(850px) translateX(-25px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes birdGlide {
+      0% { transform: translateX(0) translateY(0) scale(0.8); opacity: 0; }
+      15% { opacity: 0.4; }
+      50% { transform: translateX(230px) translateY(-25px) scale(1); opacity: 0.4; }
+      100% { transform: translateX(500px) translateY(-45px) scale(0.7); opacity: 0; }
+    }
+
+    /* 3. Neon Abyss Artifacts */
+    .synth-grid {
+      position: absolute;
+      bottom: 0;
+      left: -25%;
+      width: 150%;
+      height: 55%;
+      background-image:
+        linear-gradient(to right, rgba(0, 243, 255, 0.22) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 0, 127, 0.22) 1px, transparent 1px);
+      background-size: 36px 28px;
+      transform: perspective(220px) rotateX(65deg);
+      transform-origin: bottom center;
+      animation: synthGridScroll 3s linear infinite;
+      mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 10%, transparent 90%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.85) 10%, transparent 90%);
+    }
+
+    @keyframes synthGridScroll {
+      from { background-position: 0 0; }
+      to { background-position: 0 28px; }
+    }
+
+    .synth-shape {
+      bottom: -50px;
+      opacity: 0.55;
+      filter: drop-shadow(0 0 8px currentColor);
+      animation: synthFloatUp linear infinite;
+    }
+
+    @keyframes synthFloatUp {
+      0% { transform: translateY(0) rotate(0deg) scale(0.7); opacity: 0; }
+      20% { opacity: 0.65; }
+      80% { opacity: 0.5; }
+      100% { transform: translateY(-860px) rotate(360deg) scale(1.15); opacity: 0; }
+    }
+
+    /* 4. Kelp Forest Artifacts */
+    .forest-kelp {
+      bottom: 120px;
+      transform-origin: bottom center;
+      opacity: 0.35;
+      animation: kelpSway ease-in-out infinite alternate;
+    }
+
+    @keyframes kelpSway {
+      0% { transform: rotate(-7deg) scaleY(0.98); }
+      100% { transform: rotate(8deg) scaleY(1.03); }
+    }
+
+    .forest-spore {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #a9e34b;
+      box-shadow: 0 0 12px 3px rgba(169, 227, 75, 0.85);
+      animation: sporeWander ease-in-out infinite alternate;
+    }
+
+    @keyframes sporeWander {
+      0% { transform: translate(0, 0) scale(0.7); opacity: 0.25; }
+      50% { transform: translate(22px, -35px) scale(1.25); opacity: 0.9; }
+      100% { transform: translate(-18px, -70px) scale(0.8); opacity: 0.3; }
     }
 
     header {
@@ -248,6 +417,7 @@
     }
 
     .icon-btn {
+      position: relative;
       width: 31px;
       height: 31px;
       border-radius: 50%;
@@ -259,6 +429,28 @@
       justify-content: center;
       cursor: pointer;
       font-size: 13px;
+    }
+
+    .icon-btn .new-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background: #ff2a85;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .icon-btn .new-dot.active {
+      display: block;
+      animation: pulseDot 1s infinite alternate;
+    }
+
+    @keyframes pulseDot {
+      from { transform: scale(1); }
+      to { transform: scale(1.3); }
     }
 
     .sub-bar {
@@ -467,7 +659,7 @@
       cursor: pointer;
       touch-action: none;
       position: relative;
-      transition: transform 0.1s ease, background 0.1s ease;
+      transition: transform 0.1s ease, background 0.25s ease, border-color 0.25s ease;
     }
 
     .tile .char {
@@ -575,7 +767,7 @@
     .modal-card {
       position: relative;
       width: 88%;
-      max-width: 330px;
+      max-width: 336px;
       background: linear-gradient(180deg, #184877 0%, #0d2847 100%);
       border: 2px solid rgba(255, 255, 255, 0.25);
       border-radius: 24px;
@@ -595,6 +787,88 @@
 
     .modal-overlay.active .modal-card {
       transform: scale(1);
+    }
+
+    /* New Theme Unlocked Banner inside Victory Card */
+    .unlock-banner {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(90deg, #00f3ff, #a855f7, #ff007f);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.5);
+      animation: pulseUnlock 1s infinite alternate;
+    }
+
+    .unlock-banner.show {
+      display: flex;
+    }
+
+    @keyframes pulseUnlock {
+      from { transform: scale(0.98); }
+      to { transform: scale(1.04); }
+    }
+
+    /* Theme Picker Grid inside Theme Modal */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .theme-option {
+      position: relative;
+      border-radius: 16px;
+      padding: 12px 8px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+
+    .theme-option:active {
+      transform: scale(0.96);
+    }
+
+    .theme-option.selected-theme {
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.45);
+    }
+
+    .theme-option.locked-theme {
+      opacity: 0.55;
+      filter: grayscale(0.45);
+      cursor: not-allowed;
+    }
+
+    .theme-option .t-icon {
+      font-size: 24px;
+    }
+
+    .theme-option .t-name {
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .theme-option .t-status {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #ffe893;
     }
 
     .flawless-emblem {
@@ -722,6 +996,7 @@
 <body>
 
   <div class="game-container" id="gameApp">
+    <div class="theme-toast" id="themeToast">🌊 OCEAN TIDE</div>
     <canvas id="confettiCanvas"></canvas>
 
     <div class="loading-overlay" id="loadingOverlay">
@@ -729,7 +1004,8 @@
       <div class="loading-text" id="loadingText">Loading Everyday Words...</div>
     </div>
 
-    <div class="bubble-layer" id="bubbleLayer"></div>
+    <!-- Dynamic Theme Artifacts Container -->
+    <div class="artifact-layer" id="artifactLayer"></div>
 
     <header>
       <div class="level-badge">
@@ -741,7 +1017,10 @@
       </div>
       <div class="top-stats">
         <div class="score-chip">✨ <span id="scoreVal">0</span></div>
-        <button class="icon-btn" id="themeBtn" title="Switch Theme">🎨</button>
+        <button class="icon-btn" id="themeBtn" title="Themes">
+          🎨
+          <span class="new-dot" id="themeNewDot"></span>
+        </button>
         <button class="icon-btn" id="leaderboardBtn" title="Leaderboard">🏆</button>
         <button class="icon-btn" id="soundBtn" title="Toggle Sound">🔊</button>
       </div>
@@ -771,6 +1050,11 @@
     <!-- Victory Modal -->
     <div class="modal-overlay" id="victoryModal">
       <div class="modal-card" id="victoryCard">
+        <!-- New Theme Unlocked Notification -->
+        <div class="unlock-banner" id="unlockBanner">
+          🔓 UNLOCKED: <span id="unlockedThemeName">SUNSET REEF</span>!
+        </div>
+
         <div class="flawless-emblem" id="flawlessEmblem">
           <div class="trophy-svg-wrap">
             <div class="starburst-rays"></div>
@@ -807,6 +1091,16 @@
       </div>
     </div>
 
+    <!-- Theme Picker & Progression Modal -->
+    <div class="modal-overlay" id="themeModal">
+      <div class="modal-card">
+        <h2>🎨 WORLD THEMES</h2>
+        <p class="subtitle">Clear boards to auto-unlock new worlds!</p>
+        <div class="theme-grid" id="themeGrid"></div>
+        <button class="modal-btn" id="closeThemeModalBtn">DONE</button>
+      </div>
+    </div>
+
     <!-- Leaderboard Modal -->
     <div class="modal-overlay" id="leaderboardModal">
       <div class="modal-card">
@@ -833,14 +1127,44 @@
     }
     syncMobileViewportHeight();
 
-    // Theme Config
+    // Auto-Unlocking Themes Configuration
     const THEMES = [
-      { id: 'ocean',  name: 'Ocean Tide',  trail: '#d359ff' },
-      { id: 'sunset', name: 'Sunset Reef', trail: '#ff9966' },
-      { id: 'synth',  name: 'Neon Abyss',  trail: '#f43f5e' },
-      { id: 'forest', name: 'Kelp Forest', trail: '#fcc419' }
+      {
+        id: 'ocean',
+        name: 'Ocean Tide',
+        icon: '🌊',
+        trail: '#d359ff',
+        unlockLevel: 1,
+        previewBg: 'linear-gradient(135deg, #0972b2, #032d4e)'
+      },
+      {
+        id: 'sunset',
+        name: 'Sunset Reef',
+        icon: '🌺',
+        trail: '#ff9966',
+        unlockLevel: 3,
+        previewBg: 'linear-gradient(135deg, #ff5e62, #2b1055)'
+      },
+      {
+        id: 'synth',
+        name: 'Neon Abyss',
+        icon: '⚡',
+        trail: '#00f3ff',
+        unlockLevel: 5,
+        previewBg: 'linear-gradient(135deg, #12092b, #ff007f)'
+      },
+      {
+        id: 'forest',
+        name: 'Kelp Forest',
+        icon: '🌿',
+        trail: '#a9e34b',
+        unlockLevel: 8,
+        previewBg: 'linear-gradient(135deg, #136a8a, #051f18)'
+      }
     ];
+
     let currentThemeIdx = 0;
+    let maxLevelReached = parseInt(localStorage.getItem('quadraword_max_level') || '1', 10);
 
     const EVERYDAY_WORDS_URL = 'https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa-no-swears.txt';
     const FULL_DICT_URL = 'https://cdn.jsdelivr.net/npm/an-array-of-english-words@2.0.0/index.json';
@@ -915,6 +1239,24 @@
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(this.ctx.currentTime + 0.06);
+      }
+      themeSwitch() {
+        if (!this.enabled) return;
+        this.init();
+        const freqs = [330, 495, 660];
+        freqs.forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          const t = this.ctx.currentTime + i * 0.05;
+          osc.frequency.setValueAtTime(f, t);
+          gain.gain.setValueAtTime(0.15, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.14);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.15);
+        });
       }
       success() {
         if (!this.enabled) return;
@@ -1017,7 +1359,11 @@
     const solvedCount = document.getElementById('solvedCount');
     const totalCount = document.getElementById('totalCount');
     const bonusCount = document.getElementById('bonusCount');
-    const bubbleLayer = document.getElementById('bubbleLayer');
+    const artifactLayer = document.getElementById('artifactLayer');
+    const themeToast = document.getElementById('themeToast');
+    const themeNewDot = document.getElementById('themeNewDot');
+    const unlockBanner = document.getElementById('unlockBanner');
+    const unlockedThemeName = document.getElementById('unlockedThemeName');
     const victoryModal = document.getElementById('victoryModal');
     const victoryCard = document.getElementById('victoryCard');
     const flawlessEmblem = document.getElementById('flawlessEmblem');
@@ -1032,21 +1378,141 @@
 
     let confettiParticles = [];
     let confettiAnimId = null;
+    let toastTimer = null;
 
-    for (let i = 0; i < 12; i++) {
-      const b = document.createElement('div');
-      b.className = 'bubble';
-      const size = Math.random() * 18 + 8;
-      b.style.width = `${size}px`;
-      b.style.height = `${size}px`;
-      b.style.left = `${Math.random() * 95}%`;
-      b.style.animationDuration = `${Math.random() * 4 + 3}s`;
-      b.style.animationDelay = `${Math.random() * 4}s`;
-      bubbleLayer.appendChild(b);
+    // Theme-Specific Artifact Generator
+    function renderThemeArtifacts(themeId) {
+      artifactLayer.innerHTML = '';
+
+      if (themeId === 'ocean') {
+        for (let i = 0; i < 10; i++) {
+          const b = document.createElement('div');
+          b.className = 'artifact ocean-bubble';
+          const size = Math.random() * 16 + 8;
+          b.style.width = `${size}px`;
+          b.style.height = `${size}px`;
+          b.style.left = `${Math.random() * 92}%`;
+          b.style.animationDuration = `${Math.random() * 4 + 4}s`;
+          b.style.animationDelay = `${Math.random() * 4}s`;
+          artifactLayer.appendChild(b);
+        }
+        for (let i = 0; i < 3; i++) {
+          const j = document.createElement('div');
+          j.className = 'artifact ocean-jelly';
+          j.style.left = `${15 + i * 32}%`;
+          j.style.animationDuration = `${9 + i * 2}s`;
+          j.style.animationDelay = `${i * 2.5}s`;
+          j.innerHTML = `
+            <svg width="34" height="44" viewBox="0 0 34 44" fill="none">
+              <path d="M3 16C3 7.7 9.3 2 17 2C24.7 2 31 7.7 31 16C25 18 9 18 3 16Z" fill="rgba(165, 243, 252, 0.45)" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+              <path d="M9 17C8 25 11 33 8 41M15 18C15 26 18 34 15 42M21 18C22 26 19 34 22 42M26 17C28 25 25 33 27 40" stroke="rgba(165, 243, 252, 0.55)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>`;
+          artifactLayer.appendChild(j);
+        }
+        for (let i = 0; i < 3; i++) {
+          const f = document.createElement('div');
+          f.className = 'artifact ocean-fish';
+          f.style.top = `${22 + i * 22}%`;
+          f.style.animationDuration = `${11 + i * 3}s`;
+          f.style.animationDelay = `${i * 3}s`;
+          f.innerHTML = `
+            <svg width="38" height="20" viewBox="0 0 38 20" fill="rgba(255, 255, 255, 0.35)">
+              <path d="M10 10C15 3 26 3 34 10C26 17 15 17 10 10ZM10 10L2 4V16L10 10Z"/>
+            </svg>`;
+          artifactLayer.appendChild(f);
+        }
+      } else if (themeId === 'sunset') {
+        const sun = document.createElement('div');
+        sun.className = 'artifact sunset-sun';
+        artifactLayer.appendChild(sun);
+
+        for (let i = 0; i < 9; i++) {
+          const p = document.createElement('div');
+          p.className = 'artifact sunset-petal';
+          p.style.left = `${Math.random() * 90}%`;
+          p.style.animationDuration = `${6 + Math.random() * 4}s`;
+          p.style.animationDelay = `${Math.random() * 5}s`;
+          p.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255, 183, 178, 0.7)">
+              <path d="M12 2C15 7 19 9 22 12C19 15 15 17 12 22C9 17 5 15 2 12C5 9 9 7 12 2Z"/>
+            </svg>`;
+          artifactLayer.appendChild(p);
+        }
+
+        for (let i = 0; i < 4; i++) {
+          const bird = document.createElement('div');
+          bird.className = 'artifact sunset-bird';
+          bird.style.top = `${12 + i * 11}%`;
+          bird.style.animationDuration = `${9 + i * 2.5}s`;
+          bird.style.animationDelay = `${i * 2}s`;
+          bird.innerHTML = `
+            <svg width="32" height="16" viewBox="0 0 32 16" fill="none" stroke="rgba(255, 235, 205, 0.65)" stroke-width="2.2" stroke-linecap="round">
+              <path d="M2 10Q9 2 16 9Q23 2 30 10"/>
+            </svg>`;
+          artifactLayer.appendChild(bird);
+        }
+      } else if (themeId === 'synth') {
+        const grid = document.createElement('div');
+        grid.className = 'artifact synth-grid';
+        artifactLayer.appendChild(grid);
+
+        const neonColors = ['#00f3ff', '#ff007f', '#f59f00', '#a855f7'];
+        for (let i = 0; i < 10; i++) {
+          const shape = document.createElement('div');
+          shape.className = 'artifact synth-shape';
+          const color = neonColors[i % neonColors.length];
+          shape.style.color = color;
+          shape.style.left = `${8 + (i * 9)}%`;
+          shape.style.animationDuration = `${5.5 + (i % 4) * 1.5}s`;
+          shape.style.animationDelay = `${(i % 5) * 1.1}s`;
+
+          if (i % 3 === 0) {
+            shape.innerHTML = `<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="${color}" stroke-width="2"><polygon points="14,3 25,23 3,23"/></svg>`;
+          } else if (i % 3 === 1) {
+            shape.innerHTML = `<svg width="24" height="24" viewBox="0 0 28 28" fill="none" stroke="${color}" stroke-width="2"><rect x="5" y="5" width="18" height="18" rx="2"/></svg>`;
+          } else {
+            shape.innerHTML = `<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="${color}" stroke-width="2"><polygon points="14,2 25,8 25,20 14,26 3,20 3,8"/></svg>`;
+          }
+          artifactLayer.appendChild(shape);
+        }
+      } else if (themeId === 'forest') {
+        for (let i = 0; i < 6; i++) {
+          const kelp = document.createElement('div');
+          kelp.className = 'artifact forest-kelp';
+          kelp.style.left = `${4 + i * 17}%`;
+          kelp.style.animationDuration = `${2.6 + (i % 3) * 0.7}s`;
+          kelp.style.animationDelay = `${i * 0.4}s`;
+          kelp.innerHTML = `
+            <svg width="42" height="220" viewBox="0 0 42 220" fill="none">
+              <path d="M21 220 C 6 175, 36 130, 18 85 C 4 45, 32 20, 20 2" stroke="rgba(116, 184, 22, 0.5)" stroke-width="5" stroke-linecap="round"/>
+              <ellipse cx="12" cy="150" rx="10" ry="5" transform="rotate(-25 12 150)" fill="rgba(130, 201, 30, 0.45)"/>
+              <ellipse cx="29" cy="115" rx="10" ry="5" transform="rotate(25 29 115)" fill="rgba(130, 201, 30, 0.45)"/>
+              <ellipse cx="11" cy="75" rx="9" ry="4.5" transform="rotate(-25 11 75)" fill="rgba(130, 201, 30, 0.45)"/>
+              <ellipse cx="28" cy="40" rx="8" ry="4" transform="rotate(25 28 40)" fill="rgba(130, 201, 30, 0.45)"/>
+            </svg>`;
+          artifactLayer.appendChild(kelp);
+        }
+        for (let i = 0; i < 14; i++) {
+          const s = document.createElement('div');
+          s.className = 'artifact forest-spore';
+          s.style.left = `${Math.random() * 90 + 5}%`;
+          s.style.top = `${Math.random() * 70 + 10}%`;
+          s.style.animationDuration = `${3 + Math.random() * 3}s`;
+          s.style.animationDelay = `${Math.random() * 3}s`;
+          artifactLayer.appendChild(s);
+        }
+      }
     }
 
-    // Theme Switcher Logic
-    function applyTheme(index) {
+    function showToast(msg) {
+      themeToast.textContent = msg;
+      themeToast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => themeToast.classList.remove('show'), 1800);
+    }
+
+    // Apply an unlocked theme
+    function applyTheme(index, showBanner = false) {
       currentThemeIdx = index % THEMES.length;
       const theme = THEMES[currentThemeIdx];
       if (theme.id === 'ocean') {
@@ -1054,23 +1520,79 @@
       } else {
         document.documentElement.setAttribute('data-theme', theme.id);
       }
+
+      renderThemeArtifacts(theme.id);
       dictStatus.textContent = `${theme.name} • ${currentTargets.length || 5} Words`;
       localStorage.setItem('quadraword_theme', currentThemeIdx);
       drawTrail();
+
+      if (showBanner) {
+        showToast(`${theme.icon} ${theme.name.toUpperCase()}`);
+      }
+    }
+
+    // Render the Interactive Theme Picker Modal
+    function renderThemePickerModal() {
+      const gridEl = document.getElementById('themeGrid');
+      gridEl.innerHTML = THEMES.map((t, idx) => {
+        const isUnlocked = maxLevelReached >= t.unlockLevel;
+        const isSelected = idx === currentThemeIdx;
+        const classes = [
+          'theme-option',
+          isSelected ? 'selected-theme' : '',
+          !isUnlocked ? 'locked-theme' : ''
+        ].join(' ');
+
+        const statusLabel = isSelected
+          ? '✓ ACTIVE'
+          : isUnlocked
+            ? 'UNLOCKED'
+            : `🔒 REACH LV.${t.unlockLevel}`;
+
+        return `
+          <div class="${classes}" data-idx="${idx}" style="background: ${t.previewBg};">
+            <div class="t-icon">${isUnlocked ? t.icon : '🔒'}</div>
+            <div class="t-name">${t.name}</div>
+            <div class="t-status">${statusLabel}</div>
+          </div>
+        `;
+      }).join('');
+
+      gridEl.querySelectorAll('.theme-option').forEach(card => {
+        card.addEventListener('click', () => {
+          const idx = parseInt(card.dataset.idx, 10);
+          const theme = THEMES[idx];
+          if (maxLevelReached >= theme.unlockLevel) {
+            sound.themeSwitch();
+            applyTheme(idx, true);
+            renderThemePickerModal();
+          } else {
+            sound.error();
+            showToast(`🔒 Clear Board ${theme.unlockLevel - 1} to unlock ${theme.name}!`);
+          }
+        });
+      });
     }
 
     const savedTheme = localStorage.getItem('quadraword_theme');
     if (savedTheme !== null) {
-      currentThemeIdx = parseInt(savedTheme, 10) || 0;
-      const t = THEMES[currentThemeIdx];
-      if (t && t.id !== 'ocean') {
-        document.documentElement.setAttribute('data-theme', t.id);
+      const parsed = parseInt(savedTheme, 10) || 0;
+      if (THEMES[parsed] && maxLevelReached >= THEMES[parsed].unlockLevel) {
+        currentThemeIdx = parsed;
       }
     }
+    applyTheme(currentThemeIdx, false);
 
     document.getElementById('themeBtn').addEventListener('click', () => {
       sound.tap();
-      applyTheme(currentThemeIdx + 1);
+      themeNewDot.classList.remove('active');
+      renderThemePickerModal();
+      document.getElementById('themeModal').classList.add('active');
+    });
+
+    document.getElementById('closeThemeModalBtn').addEventListener('click', () => {
+      sound.tap();
+      document.getElementById('themeModal').classList.remove('active');
     });
 
     // Leaderboard Logic
@@ -1395,6 +1917,7 @@
       victoryModal.classList.remove('active');
       victoryCard.classList.remove('flawless-glow');
       flawlessEmblem.classList.remove('show');
+      unlockBanner.classList.remove('show');
 
       levelNum.textContent = boardNumber;
       updateHeaderStats();
@@ -1547,6 +2070,28 @@
 
     function triggerVictory() {
       const isFlawless = (wrongGuessesOnBoard === 0);
+      const nextBoardNum = boardNumber + 1;
+
+      // Check if clearing this board unlocks a new theme!
+      let newlyUnlockedTheme = null;
+      if (nextBoardNum > maxLevelReached) {
+        maxLevelReached = nextBoardNum;
+        localStorage.setItem('quadraword_max_level', maxLevelReached);
+
+        const foundIdx = THEMES.findIndex(t => t.unlockLevel === nextBoardNum);
+        if (foundIdx !== -1) {
+          newlyUnlockedTheme = THEMES[foundIdx];
+          applyTheme(foundIdx, false);
+          themeNewDot.classList.add('active');
+        }
+      }
+
+      if (newlyUnlockedTheme) {
+        unlockedThemeName.textContent = `${newlyUnlockedTheme.icon} ${newlyUnlockedTheme.name.toUpperCase()}`;
+        unlockBanner.classList.add('show');
+      } else {
+        unlockBanner.classList.remove('show');
+      }
 
       if (isFlawless) {
         score += 250;
@@ -1559,21 +2104,25 @@
         victoryCard.classList.remove('flawless-glow');
         flawlessEmblem.classList.remove('show');
         victoryTitle.textContent = 'BOARD CLEARED!';
-        victorySubtitle.textContent = 'Ready for the next mobile reef?';
+        // Show next theme unlock progress in subtitle
+        const nextLocked = THEMES.find(t => t.unlockLevel > maxLevelReached);
+        victorySubtitle.textContent = nextLocked
+          ? `Reach Board ${nextLocked.unlockLevel} to unlock ${nextLocked.icon} ${nextLocked.name}!`
+          : 'All World Themes Unlocked!';
       }
 
       const accuracy = totalAttemptsOnBoard > 0
         ? Math.round(((totalAttemptsOnBoard - wrongGuessesOnBoard) / totalAttemptsOnBoard) * 100)
         : 100;
 
-      sound.victory(isFlawless);
+      sound.victory(isFlawless || !!newlyUnlockedTheme);
       finalScore.textContent = score;
       finalBonus.textContent = bonusWordsFound.size;
       finalAccuracy.textContent = `${accuracy}%`;
 
       setTimeout(() => {
         victoryModal.classList.add('active');
-        if (isFlawless) launchFlawlessCelebrationGraphic();
+        if (isFlawless || newlyUnlockedTheme) launchFlawlessCelebrationGraphic();
       }, 500);
     }
 
