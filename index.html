@@ -23,7 +23,7 @@
       --ladder-solved-border: #dca7ff;
     }
 
-    /* Theme 2: Sunset Reef */
+    /* Theme 2: Sunset Reef (Lv. 3) */
     [data-theme="sunset"] {
       --bg-gradient: linear-gradient(180deg, #ff5e62 0%, #a83279 50%, #2b1055 100%);
       --card-bg: rgba(43, 16, 85, 0.88);
@@ -37,7 +37,7 @@
       --ladder-solved-border: #ffe0cc;
     }
 
-    /* Theme 3: Neon Abyss (Dark Synth) */
+    /* Theme 3: Neon Abyss (Lv. 5) */
     [data-theme="synth"] {
       --bg-gradient: linear-gradient(180deg, #090d16 0%, #12092b 55%, #240b36 100%);
       --card-bg: rgba(15, 10, 36, 0.92);
@@ -54,7 +54,7 @@
       --ladder-solved-border: #cffafe;
     }
 
-    /* Theme 4: Kelp Forest */
+    /* Theme 4: Kelp Forest (Lv. 8) */
     [data-theme="forest"] {
       --bg-gradient: linear-gradient(180deg, #136a8a 0%, #0f4c3a 50%, #051f18 100%);
       --card-bg: rgba(5, 31, 24, 0.88);
@@ -66,6 +66,40 @@
       --tile-sel-shadow: #9c36b5;
       --ladder-solved-bg: linear-gradient(135deg, #2b8a3e 0%, #087f5b 100%);
       --ladder-solved-border: #b2f2bb;
+    }
+
+    /* Theme 5: Volcanic Trench (Lv. 12) */
+    [data-theme="volcanic"] {
+      --bg-gradient: linear-gradient(180deg, #1f0808 0%, #4a0e0e 55%, #8f1d00 100%);
+      --card-bg: rgba(28, 7, 5, 0.92);
+      --card-border: rgba(255, 87, 34, 0.4);
+      --tile-bg: #2b1714;
+      --tile-border: #ff7043;
+      --tile-shadow: #bf360c;
+      --tile-text: #ffccbc;
+      --tile-sel-bg: linear-gradient(135deg, #ff9800 0%, #ff3d00 100%);
+      --tile-sel-shadow: #870000;
+      --ladder-bg: rgba(255, 87, 34, 0.12);
+      --ladder-border: rgba(255, 138, 101, 0.35);
+      --ladder-solved-bg: linear-gradient(135deg, #ff5722 0%, #d84315 100%);
+      --ladder-solved-border: #ffcc80;
+    }
+
+    /* Theme 6: Arctic Ice (Lv. 15) */
+    [data-theme="arctic"] {
+      --bg-gradient: linear-gradient(180deg, #0b2545 0%, #134074 45%, #8da9c4 100%);
+      --card-bg: rgba(11, 37, 69, 0.88);
+      --card-border: rgba(165, 243, 252, 0.45);
+      --tile-bg: #eef8ff;
+      --tile-border: #bae6fd;
+      --tile-shadow: #38bdf8;
+      --tile-text: #0c4a6e;
+      --tile-sel-bg: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
+      --tile-sel-shadow: #0369a1;
+      --ladder-bg: rgba(224, 242, 254, 0.16);
+      --ladder-border: rgba(186, 230, 253, 0.42);
+      --ladder-solved-bg: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      --ladder-solved-border: #a5f3fc;
     }
 
     * {
@@ -340,6 +374,88 @@
       0% { transform: translate(0, 0) scale(0.7); opacity: 0.25; }
       50% { transform: translate(22px, -35px) scale(1.25); opacity: 0.9; }
       100% { transform: translate(-18px, -70px) scale(0.8); opacity: 0.3; }
+    }
+
+    /* 5. Volcanic Trench Artifacts (Lv. 12) */
+    .volcanic-vent {
+      bottom: 130px;
+      opacity: 0.55;
+      filter: drop-shadow(0 0 18px rgba(255, 87, 34, 0.6));
+    }
+
+    .volcanic-ember {
+      bottom: -30px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff176 0%, #ff5722 60%, transparent 100%);
+      box-shadow: 0 0 12px #ff3d00;
+      animation: emberRise linear infinite;
+    }
+
+    .volcanic-ash {
+      bottom: -40px;
+      opacity: 0.45;
+      animation: ashSpiral linear infinite;
+    }
+
+    @keyframes emberRise {
+      0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+      15% { opacity: 0.9; }
+      50% { transform: translateY(-420px) translateX(-24px) scale(0.8); opacity: 0.75; }
+      100% { transform: translateY(-880px) translateX(18px) scale(0.3); opacity: 0; }
+    }
+
+    @keyframes ashSpiral {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.5; }
+      100% { transform: translateY(-860px) translateX(40px) rotate(540deg); opacity: 0; }
+    }
+
+    /* 6. Arctic Ice Artifacts (Lv. 15) */
+    .arctic-aurora {
+      top: 4%;
+      left: -10%;
+      width: 120%;
+      height: 190px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(0, 245, 212, 0.22) 25%,
+        rgba(56, 189, 248, 0.28) 50%,
+        rgba(168, 85, 247, 0.2) 75%,
+        transparent 100%
+      );
+      filter: blur(22px);
+      transform: skewY(-8deg);
+      animation: auroraWave 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes auroraWave {
+      0% { transform: skewY(-8deg) translateX(-15px) scaleY(0.9); opacity: 0.55; }
+      100% { transform: skewY(6deg) translateX(15px) scaleY(1.15); opacity: 0.9; }
+    }
+
+    .arctic-flake {
+      top: -40px;
+      opacity: 0.65;
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+      animation: snowFall linear infinite;
+    }
+
+    .arctic-iceberg {
+      bottom: 135px;
+      opacity: 0.35;
+      animation: bergBob 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes snowFall {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      15% { opacity: 0.75; }
+      50% { transform: translateY(420px) translateX(20px) rotate(180deg); opacity: 0.65; }
+      100% { transform: translateY(860px) translateX(-20px) rotate(360deg); opacity: 0; }
+    }
+
+    @keyframes bergBob {
+      from { transform: translateY(0px) rotate(-1.5deg); }
+      to { transform: translateY(8px) rotate(1.5deg); }
     }
 
     header {
@@ -766,8 +882,8 @@
 
     .modal-card {
       position: relative;
-      width: 88%;
-      max-width: 336px;
+      width: 90%;
+      max-width: 344px;
       background: linear-gradient(180deg, #184877 0%, #0d2847 100%);
       border: 2px solid rgba(255, 255, 255, 0.25);
       border-radius: 24px;
@@ -789,7 +905,6 @@
       transform: scale(1);
     }
 
-    /* New Theme Unlocked Banner inside Victory Card */
     .unlock-banner {
       display: none;
       align-items: center;
@@ -815,24 +930,24 @@
       to { transform: scale(1.04); }
     }
 
-    /* Theme Picker Grid inside Theme Modal */
+    /* 6-Theme Picker Grid */
     .theme-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 9px;
+      margin-bottom: 14px;
     }
 
     .theme-option {
       position: relative;
-      border-radius: 16px;
-      padding: 12px 8px;
+      border-radius: 15px;
+      padding: 10px 6px;
       border: 2px solid rgba(255, 255, 255, 0.2);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       transition: transform 0.15s ease, border-color 0.2s ease;
       overflow: hidden;
     }
@@ -853,21 +968,21 @@
     }
 
     .theme-option .t-icon {
-      font-size: 24px;
+      font-size: 21px;
     }
 
     .theme-option .t-name {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
       color: #fff;
     }
 
     .theme-option .t-status {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 800;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 8px;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.48);
       color: #ffe893;
     }
 
@@ -1050,7 +1165,6 @@
     <!-- Victory Modal -->
     <div class="modal-overlay" id="victoryModal">
       <div class="modal-card" id="victoryCard">
-        <!-- New Theme Unlocked Notification -->
         <div class="unlock-banner" id="unlockBanner">
           🔓 UNLOCKED: <span id="unlockedThemeName">SUNSET REEF</span>!
         </div>
@@ -1095,7 +1209,7 @@
     <div class="modal-overlay" id="themeModal">
       <div class="modal-card">
         <h2>🎨 WORLD THEMES</h2>
-        <p class="subtitle">Clear boards to auto-unlock new worlds!</p>
+        <p class="subtitle">Clear boards to auto-unlock all 6 worlds!</p>
         <div class="theme-grid" id="themeGrid"></div>
         <button class="modal-btn" id="closeThemeModalBtn">DONE</button>
       </div>
@@ -1127,7 +1241,7 @@
     }
     syncMobileViewportHeight();
 
-    // Auto-Unlocking Themes Configuration
+    // 6 Auto-Unlocking World Themes (Lv.1 -> Lv.15)
     const THEMES = [
       {
         id: 'ocean',
@@ -1160,6 +1274,22 @@
         trail: '#a9e34b',
         unlockLevel: 8,
         previewBg: 'linear-gradient(135deg, #136a8a, #051f18)'
+      },
+      {
+        id: 'volcanic',
+        name: 'Volcanic Trench',
+        icon: '🌋',
+        trail: '#ff5722',
+        unlockLevel: 12,
+        previewBg: 'linear-gradient(135deg, #1f0808, #bf360c)'
+      },
+      {
+        id: 'arctic',
+        name: 'Arctic Ice',
+        icon: '❄️',
+        trail: '#00f5d4',
+        unlockLevel: 15,
+        previewBg: 'linear-gradient(135deg, #0b2545, #38bdf8)'
       }
     ];
 
@@ -1380,7 +1510,7 @@
     let confettiAnimId = null;
     let toastTimer = null;
 
-    // Theme-Specific Artifact Generator
+    // Theme-Specific Artifact Generator (All 6 Worlds)
     function renderThemeArtifacts(themeId) {
       artifactLayer.innerHTML = '';
 
@@ -1501,6 +1631,82 @@
           s.style.animationDelay = `${Math.random() * 3}s`;
           artifactLayer.appendChild(s);
         }
+      } else if (themeId === 'volcanic') {
+        // Hydrothermal Magma Vents along the trench floor
+        for (let i = 0; i < 3; i++) {
+          const vent = document.createElement('div');
+          vent.className = 'artifact volcanic-vent';
+          vent.style.left = `${8 + i * 34}%`;
+          vent.innerHTML = `
+            <svg width="95" height="120" viewBox="0 0 95 120" fill="none">
+              <path d="M5 120L28 35H66L90 120H5Z" fill="rgba(35, 12, 10, 0.85)" stroke="rgba(255, 87, 34, 0.5)" stroke-width="2"/>
+              <path d="M36 35C42 60 52 75 48 115" stroke="rgba(255, 152, 0, 0.7)" stroke-width="4" stroke-linecap="round"/>
+              <ellipse cx="47" cy="35" rx="18" ry="6" fill="rgba(255, 87, 34, 0.85)"/>
+            </svg>`;
+          artifactLayer.appendChild(vent);
+        }
+        // Rising Superheated Magma Embers
+        for (let i = 0; i < 16; i++) {
+          const ember = document.createElement('div');
+          ember.className = 'artifact volcanic-ember';
+          const size = Math.random() * 9 + 5;
+          ember.style.width = `${size}px`;
+          ember.style.height = `${size}px`;
+          ember.style.left = `${Math.random() * 92 + 4}%`;
+          ember.style.animationDuration = `${3.5 + Math.random() * 3.5}s`;
+          ember.style.animationDelay = `${Math.random() * 4}s`;
+          artifactLayer.appendChild(ember);
+        }
+        // Spiraling Volcanic Ash Shards
+        for (let i = 0; i < 8; i++) {
+          const ash = document.createElement('div');
+          ash.className = 'artifact volcanic-ash';
+          ash.style.left = `${Math.random() * 90}%`;
+          ash.style.animationDuration = `${6 + Math.random() * 4}s`;
+          ash.style.animationDelay = `${Math.random() * 4}s`;
+          ash.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="rgba(255, 171, 145, 0.55)">
+              <polygon points="8,1 15,6 12,15 3,12"/>
+            </svg>`;
+          artifactLayer.appendChild(ash);
+        }
+      } else if (themeId === 'arctic') {
+        // Shimmering Aurora Borealis Ribbon
+        const aurora = document.createElement('div');
+        aurora.className = 'artifact arctic-aurora';
+        artifactLayer.appendChild(aurora);
+
+        // Bobbing Glacial Icebergs
+        for (let i = 0; i < 3; i++) {
+          const berg = document.createElement('div');
+          berg.className = 'artifact arctic-iceberg';
+          berg.style.left = `${5 + i * 35}%`;
+          berg.style.animationDelay = `${i * 1.2}s`;
+          berg.innerHTML = `
+            <svg width="105" height="90" viewBox="0 0 105 90" fill="none">
+              <polygon points="10,90 28,28 52,8 76,34 95,90" fill="rgba(224, 242, 254, 0.35)" stroke="rgba(186, 230, 253, 0.7)" stroke-width="1.5"/>
+              <polygon points="52,8 76,34 62,90 42,90" fill="rgba(56, 189, 248, 0.25)"/>
+            </svg>`;
+          artifactLayer.appendChild(berg);
+        }
+
+        // Drifting 6-Point Crystal Snowflakes
+        for (let i = 0; i < 12; i++) {
+          const flake = document.createElement('div');
+          flake.className = 'artifact arctic-flake';
+          flake.style.left = `${Math.random() * 92 + 4}%`;
+          flake.style.animationDuration = `${5.5 + Math.random() * 4.5}s`;
+          flake.style.animationDelay = `${Math.random() * 5}s`;
+          const s = 16 + Math.floor(Math.random() * 10);
+          flake.innerHTML = `
+            <svg width="${s}" height="${s}" viewBox="0 0 24 24" stroke="rgba(240, 249, 255, 0.85)" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="2" x2="12" y2="22"/>
+              <line x1="3.3" y1="7" x2="20.7" y2="17"/>
+              <line x1="3.3" y1="17" x2="20.7" y2="7"/>
+              <circle cx="12" cy="12" r="2.5" fill="rgba(186, 230, 253, 0.6)"/>
+            </svg>`;
+          artifactLayer.appendChild(flake);
+        }
       }
     }
 
@@ -1531,7 +1737,7 @@
       }
     }
 
-    // Render the Interactive Theme Picker Modal
+    // Render the Interactive 6-Theme Picker Modal
     function renderThemePickerModal() {
       const gridEl = document.getElementById('themeGrid');
       gridEl.innerHTML = THEMES.map((t, idx) => {
@@ -2104,11 +2310,10 @@
         victoryCard.classList.remove('flawless-glow');
         flawlessEmblem.classList.remove('show');
         victoryTitle.textContent = 'BOARD CLEARED!';
-        // Show next theme unlock progress in subtitle
         const nextLocked = THEMES.find(t => t.unlockLevel > maxLevelReached);
         victorySubtitle.textContent = nextLocked
           ? `Reach Board ${nextLocked.unlockLevel} to unlock ${nextLocked.icon} ${nextLocked.name}!`
-          : 'All World Themes Unlocked!';
+          : 'All 6 World Themes Unlocked!';
       }
 
       const accuracy = totalAttemptsOnBoard > 0
